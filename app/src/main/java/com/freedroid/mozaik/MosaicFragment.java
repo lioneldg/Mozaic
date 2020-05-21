@@ -18,6 +18,9 @@ import androidx.fragment.app.Fragment;
 import java.util.Objects;
 import static android.app.Activity.RESULT_OK;
 
+//recupérer le nom et le prénom dans la boite de dialogue!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//empecher le changement d'orientation
+//régler automatiquement le nbr de colones en fonction du nbr d'item pour rester sur du format A4
 
 public class MosaicFragment extends Fragment {
 
@@ -62,6 +65,7 @@ public class MosaicFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 imageCell = view.findViewById(R.id.grid_item_image);
                 choosePicture();
+                setFirstName();
             }
         });
 
@@ -82,5 +86,11 @@ public class MosaicFragment extends Fragment {
                 .setAction(Intent.ACTION_GET_CONTENT);
 
         startActivityForResult(Intent.createChooser(intent, "Select a file"), 123);
+    }
+
+    private void setFirstName(){
+        Intent intent = new Intent(getActivity(), DialogEditText.class);
+        startActivity(intent);
+
     }
 }
