@@ -21,13 +21,24 @@ import static android.app.Activity.RESULT_OK;
 
 public class MosaicFragment extends Fragment {
 
-    private String[] firstName = {"firstName","firstName","firstName","firstName","firstName","firstName","firstName","firstName","firstName","firstName","firstName","firstName","firstName","firstName","firstName","firstName","firstName","firstName","firstName","firstName"};
-    private String[] lastName = {"lastName","lastName","lastName","lastName","lastName","lastName","lastName","lastName","lastName","lastName","lastName","lastName","lastName","lastName","lastName","lastName","lastName","lastName","lastName","lastName"};
-    private int[] imageId = new int[20];
+    private int nbrItems = 30;
+    private int nbrColumns = 6;
+    private String[] firstName = null;
+    private String[] lastName = null;
+    private int[] imageId = null;
     private ImageView imageCell = null;
 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        firstName = new String[nbrItems];
+        lastName = new String[nbrItems];
+        imageId = new int[nbrItems];
+
+        for(int i = 0; i < nbrItems; i++) {
+            firstName[i] = "firstName";
+            lastName[i] = "lastName";
+        }
     }
 
     @Nullable
@@ -35,8 +46,9 @@ public class MosaicFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.mosaic_fragment_layout,container, false);
 
-        final ImageAdapter adapter = new ImageAdapter(getContext(), firstName, lastName, imageId);
+        final ImageAdapter adapter = new ImageAdapter(getContext(), firstName, lastName, imageId, nbrColumns);
         GridView grid = view.findViewById(R.id.PhotoGridView);
+        grid.setNumColumns(nbrColumns);
 
         Display display = Objects.requireNonNull(getActivity()).getWindowManager().getDefaultDisplay();
         Point size = new Point();

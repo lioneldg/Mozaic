@@ -14,16 +14,18 @@ import android.widget.TextView;
 
 public class ImageAdapter extends BaseAdapter {
 
-    private Context mContext;
-    private final int[] imageId;
-    private final String[] firstName;
-    private final String[] lastName;
+    private Context mContext = null;
+    private int[] imageId = null;
+    private String[] firstName = null;
+    private String[] lastName = null;
+    private int nbrColumns = 0;
 
-    public ImageAdapter(Context c, String[] firstName, String[] lastName, int[] imageId) {
+    public ImageAdapter(Context c, String[] firstName, String[] lastName, int[] imageId, int nbrColumns) {
         mContext = c;
         this.imageId = imageId;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.nbrColumns = nbrColumns;
     }
 
     public int getCount() {
@@ -49,7 +51,7 @@ public class ImageAdapter extends BaseAdapter {
         display.getSize(size);
         int width = size.x;
         int height = size.y;
-        float a4Width = size.x / 5.0f;
+        float a4Width = size.x / (float)nbrColumns;
         float a4Height = (a4Width/21f*29.7f);
 
         if (convertView == null) {
