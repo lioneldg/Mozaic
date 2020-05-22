@@ -8,29 +8,23 @@
 
     <ImageView
         android:id="@+id/grid_item_image"
-        android:layout_width="80dp"
-        android:layout_height="100dp"
-        android:layout_gravity="center">
-    </ImageView>
-
-    <TextView
-        android:id="@+id/lastName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@+id/label"
-        android:textSize="5sp"
-        android:layout_gravity="center"
-        tools:ignore="SmallSp">
-    </TextView>
+        android:layout_gravity="center">
+    </ImageView>
 
     <TextView
         android:id="@+id/firstName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@+id/label"
-        android:textSize="5sp"
-        android:layout_gravity="center"
-        tools:ignore="SmallSp">
-    </TextView>
+        android:layout_gravity="center" />
+
+    <TextView
+        android:id="@+id/lastName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@+id/label"
+        android:layout_gravity="center"/>
 
 </LinearLayout>

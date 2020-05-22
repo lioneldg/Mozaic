@@ -11,6 +11,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ImageAdapter extends BaseAdapter {
 
@@ -19,6 +20,7 @@ public class ImageAdapter extends BaseAdapter {
     private String[] firstName = null;
     private String[] lastName = null;
     private int nbrColumns = 0;
+    private float textSize = 0;
 
     public ImageAdapter(Context c, String[] firstName, String[] lastName, int[] imageId, int nbrColumns) {
         mContext = c;
@@ -26,6 +28,7 @@ public class ImageAdapter extends BaseAdapter {
         this.firstName = firstName;
         this.lastName = lastName;
         this.nbrColumns = nbrColumns;
+        this.textSize = 30.0f/(float)nbrColumns;
     }
 
     public int getCount() {
@@ -49,10 +52,9 @@ public class ImageAdapter extends BaseAdapter {
         Display display = wm.getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
-        int width = size.x;
-        int height = size.y;
+
         float a4Width = size.x / (float)nbrColumns;
-        float a4Height = (a4Width/21f*29.7f);
+        float a4Height = (a4Width*1.414f);
 
         if (convertView == null) {
             gridView = new View(mContext);
@@ -61,14 +63,15 @@ public class ImageAdapter extends BaseAdapter {
 
             TextView textViewFirstName = gridView.findViewById(R.id.firstName);
             textViewFirstName.setText(firstName[position]);
-            float heightFirstName = textViewFirstName.getTextSize();
+            textViewFirstName.setTextSize(textSize);
 
             TextView textViewLastName = gridView.findViewById(R.id.lastName);
             textViewLastName.setText(lastName[position]);
-            float heightLastName = textViewLastName.getTextSize();
+            textViewLastName.setTextSize(textSize);
 
+            //Toast.makeText(mContext, "textSize = "+textSize+"\nheightFirstname = "+heightFirstName, Toast.LENGTH_SHORT).show();
             ImageView imageView = gridView.findViewById(R.id.grid_item_image);
-            imageView.setLayoutParams(new LinearLayout.LayoutParams((int)a4Width, (int)(a4Height - heightFirstName - heightLastName)));
+            imageView.setLayoutParams(new LinearLayout.LayoutParams((int)a4Width, (int)(a4Height - textSize * 9)));
             imageView.setImageResource(imageId[position]);
         }
         else {

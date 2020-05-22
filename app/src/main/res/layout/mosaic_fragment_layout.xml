@@ -8,9 +8,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/PhotoGridView"
-        android:verticalSpacing="15dp"
-        android:horizontalSpacing="3dp"
-        android:stretchMode="columnWidth"
         android:gravity="center"  />
 
 </FrameLayout>
