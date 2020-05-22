@@ -60,7 +60,7 @@ public class ImageAdapter extends BaseAdapter {
         if (convertView == null) {
             gridView = new View(mContext);
             assert inflater != null;
-            gridView = inflater.inflate(R.layout.cell_layout, null);
+            gridView = inflater.inflate(R.layout.cell_layout, null);    //ne sait pas comment accéder au ViewGroup à la place de null
 
             TextView textViewFirstName = gridView.findViewById(R.id.firstName);
             textViewFirstName.setText(firstName[position]);

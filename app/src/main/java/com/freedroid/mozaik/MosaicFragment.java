@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -25,13 +26,11 @@ import java.util.Objects;
 import static android.app.Activity.RESULT_OK;
 
 //prévoir de developper l'orientation au format paysage (et débloquer l'orientation dans le manifest)
-//créer un slider pour régler le nbr de colonnes
 //créer un checkbox pour ne pas afficher le nom et le prénom
-//copier les photos sélectionnées dans le dossier du logiciel
+//copier les photos sélectionnées dans le dossier du logiciel!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //mettre en place ROOM pour conserver les infos des clients
 //créer un RV pour lister les clients en BDD et pouvoir les selectionner
 //créer une static factory methode pour chaque fragment
-//transformer TextView nbrItems en EditView en relation avec SeekBar
 
 
 public class MosaicFragment extends Fragment {
@@ -49,6 +48,9 @@ public class MosaicFragment extends Fragment {
     private GridView grid = null;
     private ImageAdapter adapter = null;
     private View view = null;
+    private int currentSelection = -1;
+    private Button buttonMore = null;
+    private Button buttonLess = null;
 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +77,33 @@ public class MosaicFragment extends Fragment {
         seekBarNbrItems = view.findViewById(R.id.seekBarNbrItems);
         seekBarNbrItems.setProgress(nbrItems);
         textViewSeekBarNbrItems.setText(String.valueOf(nbrItems));
+        buttonLess = view.findViewById(R.id.buttonLess);
+        buttonMore = view.findViewById(R.id.buttonMore);
+
+        buttonMore.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if(seekBarNbrItems.getProgress() < 100){
+                    seekBarNbrItems.setProgress(seekBarNbrItems.getProgress() + 1);
+                    setNbrColumns();                        //calcule le nbr de colonnes necessaire pour afficher en format A4
+                    grid.setNumColumns(nbrColumns);         //paramètre le nbr de colonnes
+                    adapter = new ImageAdapter(getContext(), firstNames, lastNames, imageIds, nbrColumns, nbrItems);
+                    grid.setAdapter(adapter);
+                }
+
+            }
+        });
+
+        buttonLess.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if(seekBarNbrItems.getProgress() > 1){
+                    seekBarNbrItems.setProgress(seekBarNbrItems.getProgress() - 1);
+                    setNbrColumns();                        //calcule le nbr de colonnes necessaire pour afficher en format A4
+                    grid.setNumColumns(nbrColumns);         //paramètre le nbr de colonnes
+                    adapter = new ImageAdapter(getContext(), firstNames, lastNames, imageIds, nbrColumns, nbrItems);
+                    grid.setAdapter(adapter);
+                }
+            }
+        });
 
         //CALCUL DU FORMAT A4 pour appliquer à GridView
         Display display = Objects.requireNonNull(getActivity()).getWindowManager().getDefaultDisplay();
@@ -94,6 +123,7 @@ public class MosaicFragment extends Fragment {
                 imageCell = view.findViewById(R.id.grid_item_image);
                 firstName = view.findViewById(R.id.firstName);
                 lastName = view.findViewById(R.id.lastName);
+                currentSelection = position;
                 choosePicture();
             }
         });
@@ -101,15 +131,13 @@ public class MosaicFragment extends Fragment {
         seekBarNbrItems.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                nbrItems = progress;
-                textViewSeekBarNbrItems.setText(String.valueOf(progress));
-                Log.d("ITEMS", "DURING = "+nbrItems);
+                nbrItems = (progress == 0 )? 1: progress;       //empecher nbrItems = 0
+                textViewSeekBarNbrItems.setText(String.valueOf(nbrItems));
             }
 
             public void onStartTrackingTouch(SeekBar seekBar) { }
 
             public void onStopTrackingTouch(SeekBar seekBar) {
-                Log.d("ITEMS", "END = "+nbrItems);
                 setNbrColumns();                        //calcule le nbr de colonnes necessaire pour afficher en format A4
                 grid.setNumColumns(nbrColumns);         //paramètre le nbr de colonnes
                 adapter = new ImageAdapter(getContext(), firstNames, lastNames, imageIds, nbrColumns, nbrItems);
@@ -123,16 +151,18 @@ public class MosaicFragment extends Fragment {
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 123 && resultCode == RESULT_OK) {
+        if(requestCode == 123 && resultCode == RESULT_OK) {     //choosePicture Activity result
             Uri selectedFile = data.getData();
             imageCell.setImageURI(selectedFile);
 
-            setName(); //la boite de dialogue set name s'ouvre après sélection de la photo
+            setName();      //DialogEditText s'ouvre après sélection de la photo
         }
-        if(requestCode == 100 && resultCode == RESULT_OK){
-            Log.d("FIRSTNAME",""+data.getStringExtra("firstName"));
+        if(requestCode == 100 && resultCode == RESULT_OK){      //setName Activity result
             firstName.setText(data.getStringExtra("firstName"));
             lastName.setText(data.getStringExtra("lastName"));
+            firstNames[currentSelection] = data.getStringExtra("firstName");
+            lastNames[currentSelection] = data.getStringExtra("lastName");
+            currentSelection = -1;
         }
     }
 

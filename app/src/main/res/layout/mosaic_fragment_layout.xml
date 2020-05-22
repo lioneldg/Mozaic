@@ -17,24 +17,47 @@
 
     <TextView
         android:id="@+id/textNbrItems"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textSize="15sp"
         app:layout_constraintBottom_toTopOf="@+id/seekBarNbrItems"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/PhotoGridView"
-        app:layout_constraintVertical_bias="0.915"
-        tools:layout_editor_absoluteX="0dp" />
+        app:layout_constraintVertical_bias="0.915" />
 
     <SeekBar
         android:id="@+id/seekBarNbrItems"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="280dp"
+        android:layout_height="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/PhotoGridView"
+        app:layout_constraintVertical_bias="0.940" />
+
+
+    <Button
+        android:id="@+id/buttonMore"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:text="+"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/PhotoGridView"
-        app:layout_constraintVertical_bias="0.921" />
+        app:layout_constraintStart_toEndOf="@+id/seekBarNbrItems"
+        app:layout_constraintTop_toBottomOf="@+id/textNbrItems" />
 
+    <Button
+        android:id="@+id/buttonLess"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:text="-"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/seekBarNbrItems"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textNbrItems" />
 </androidx.constraintlayout.widget.ConstraintLayout>
