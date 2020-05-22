@@ -13,16 +13,17 @@ import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import java.util.Objects;
 import static android.app.Activity.RESULT_OK;
 
-//recupérer le nom et le prénom dans la boite de dialogue!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //prévoir de developper l'orientation au format paysage (et débloquer l'orientation dans le manifest)
 //créer un slider pour régler le nbr de colonnes
 //créer un checkbox pour ne pas afficher le nom et le prénom
@@ -30,11 +31,12 @@ import static android.app.Activity.RESULT_OK;
 //mettre en place ROOM pour conserver les infos des clients
 //créer un RV pour lister les clients en BDD et pouvoir les selectionner
 //créer une static factory methode pour chaque fragment
+//transformer TextView nbrItems en EditView en relation avec SeekBar
 
 
 public class MosaicFragment extends Fragment {
 
-    private int nbrItems = 20;
+    private int nbrItems = 0;
     private int nbrColumns = 0;
     private String[] firstNames = null;
     private String[] lastNames = null;
@@ -42,15 +44,18 @@ public class MosaicFragment extends Fragment {
     private ImageView imageCell = null;
     private TextView firstName = null;
     private TextView lastName = null;
+    private TextView textViewSeekBarNbrItems = null;
+    private SeekBar seekBarNbrItems = null;
+    private GridView grid = null;
+    private ImageAdapter adapter = null;
+    private View view = null;
 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setNbrColumns();
-
-        firstNames = new String[nbrItems];
-        lastNames = new String[nbrItems];
-        imageIds = new int[nbrItems];
+        nbrItems = 100;
+        firstNames = new String[100];
+        lastNames = new String[100];
+        imageIds = new int[100];
 
         for(int i = 0; i < nbrItems; i++) {
             firstNames[i] = "firstName";
@@ -62,19 +67,27 @@ public class MosaicFragment extends Fragment {
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View view = inflater.inflate(R.layout.mosaic_fragment_layout,container, false);
+        view = inflater.inflate(R.layout.mosaic_fragment_layout,container, false);
 
-        final ImageAdapter adapter = new ImageAdapter(getContext(), firstNames, lastNames, imageIds, nbrColumns);
-        GridView grid = view.findViewById(R.id.PhotoGridView);
-        grid.setNumColumns(nbrColumns);
+        setNbrColumns();    //calcule le nbr de colonnes necessaire pour afficher en format A4
 
+        textViewSeekBarNbrItems = view.findViewById(R.id.textNbrItems);
+        seekBarNbrItems = view.findViewById(R.id.seekBarNbrItems);
+        seekBarNbrItems.setProgress(nbrItems);
+        textViewSeekBarNbrItems.setText(String.valueOf(nbrItems));
+
+        //CALCUL DU FORMAT A4 pour appliquer à GridView
         Display display = Objects.requireNonNull(getActivity()).getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         float a4Width = size.x;
-        float a4Height = a4Width/21f*29.7f;
+        float a4Height = a4Width*1.414f;
 
-        grid.setLayoutParams(new FrameLayout.LayoutParams((int)a4Width, (int)a4Height));
+        //
+        grid = view.findViewById(R.id.PhotoGridView);
+        grid.setNumColumns(nbrColumns);         //paramètre le nbr de colonnes
+        grid.setLayoutParams(new ConstraintLayout.LayoutParams((int)a4Width, (int)a4Height));
+        adapter = new ImageAdapter(getContext(), firstNames, lastNames, imageIds, nbrColumns, nbrItems);
         grid.setAdapter(adapter);
         grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -82,6 +95,26 @@ public class MosaicFragment extends Fragment {
                 firstName = view.findViewById(R.id.firstName);
                 lastName = view.findViewById(R.id.lastName);
                 choosePicture();
+            }
+        });
+
+        seekBarNbrItems.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                nbrItems = progress;
+                textViewSeekBarNbrItems.setText(String.valueOf(progress));
+                Log.d("ITEMS", "DURING = "+nbrItems);
+            }
+
+            public void onStartTrackingTouch(SeekBar seekBar) { }
+
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                Log.d("ITEMS", "END = "+nbrItems);
+                setNbrColumns();                        //calcule le nbr de colonnes necessaire pour afficher en format A4
+                grid.setNumColumns(nbrColumns);         //paramètre le nbr de colonnes
+                adapter = new ImageAdapter(getContext(), firstNames, lastNames, imageIds, nbrColumns, nbrItems);
+                grid.setAdapter(adapter);
+
             }
         });
 

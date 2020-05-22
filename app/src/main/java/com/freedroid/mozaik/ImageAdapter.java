@@ -11,28 +11,29 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class ImageAdapter extends BaseAdapter {
 
-    private Context mContext = null;
-    private int[] imageId = null;
-    private String[] firstName = null;
-    private String[] lastName = null;
-    private int nbrColumns = 0;
-    private float textSize = 0;
+    private Context mContext;
+    private int[] imageId;
+    private String[] firstName;
+    private String[] lastName;
+    private int nbrColumns;
+    private float textSize;
+    private int nbrItems;
 
-    public ImageAdapter(Context c, String[] firstName, String[] lastName, int[] imageId, int nbrColumns) {
+    public ImageAdapter(Context c, String[] firstName, String[] lastName, int[] imageId, int nbrColumns, int nbrItems) {
         mContext = c;
         this.imageId = imageId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.nbrColumns = nbrColumns;
         this.textSize = 30.0f/(float)nbrColumns;
+        this.nbrItems = nbrItems;
     }
 
     public int getCount() {
-        return imageId.length;
+        return nbrItems;
     }
 
     public Object getItem(int position) {
