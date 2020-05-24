@@ -1,7 +1,10 @@
 package com.freedroid.mozaik;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.net.Uri;
+import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,20 +14,23 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ImageAdapter extends BaseAdapter {
 
     private Context mContext;
     private int[] imageId;
+    private Uri[] imageUris;
     private String[] firstName;
     private String[] lastName;
     private int nbrColumns;
     private float textSize;
     private int nbrItems;
 
-    public ImageAdapter(Context c, String[] firstName, String[] lastName, int[] imageId, int nbrColumns, int nbrItems) {
+    public ImageAdapter(Context c, String[] firstName, String[] lastName, int[] imageId, Uri imageUris[], int nbrColumns, int nbrItems) {
         mContext = c;
         this.imageId = imageId;
+        this.imageUris = imageUris;
         this.firstName = firstName;
         this.lastName = lastName;
         this.nbrColumns = nbrColumns;
@@ -70,14 +76,29 @@ public class ImageAdapter extends BaseAdapter {
             textViewLastName.setText(lastName[position]);
             textViewLastName.setTextSize(textSize);
 
-            //Toast.makeText(mContext, "textSize = "+textSize+"\nheightFirstname = "+heightFirstName, Toast.LENGTH_SHORT).show();
+
             ImageView imageView = gridView.findViewById(R.id.grid_item_image);
             imageView.setLayoutParams(new LinearLayout.LayoutParams((int)a4Width, (int)(a4Height - textSize * 9)));
-            imageView.setImageResource(imageId[position]);
+
+            if ((imageUris[position] != null)) {            //utilisé lors de l'initialisation et du changement de configuration
+                imageView.setImageURI(imageUris[position]);
+            } else {
+                imageView.setImageResource(imageId[position]);
+            }
         }
         else {
             gridView = convertView;
         }
+
+
         return gridView;
+    }
+
+    private int freePositions(){      //calcul du nombre d'items non utilisés
+        int free = 0;
+        for(int i = 0; i<nbrItems; i++){
+            if (imageUris[i] == null) free++;
+        }
+        return free;
     }
 }
