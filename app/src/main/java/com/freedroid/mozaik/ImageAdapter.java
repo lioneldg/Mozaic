@@ -3,8 +3,6 @@ package com.freedroid.mozaik;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Point;
-import android.net.Uri;
-import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,28 +12,30 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+import java.io.File;
 
 public class ImageAdapter extends BaseAdapter {
 
     private Context mContext;
     private int[] imageId;
-    private Uri[] imageUris;
+    private File[] imageFiles;
     private String[] firstName;
     private String[] lastName;
     private int nbrColumns;
     private float textSize;
     private int nbrItems;
+    private int maxSizeImage;
 
-    public ImageAdapter(Context c, String[] firstName, String[] lastName, int[] imageId, Uri imageUris[], int nbrColumns, int nbrItems) {
+    ImageAdapter(Context c, String[] firstName, String[] lastName, int[] imageId, File imageFiles[], int nbrColumns, int nbrItems, int maxSizeImage) {
         mContext = c;
         this.imageId = imageId;
-        this.imageUris = imageUris;
+        this.imageFiles = imageFiles;
         this.firstName = firstName;
         this.lastName = lastName;
         this.nbrColumns = nbrColumns;
         this.textSize = 30.0f/(float)nbrColumns;
         this.nbrItems = nbrItems;
+        this.maxSizeImage = maxSizeImage;
     }
 
     public int getCount() {
@@ -80,8 +80,9 @@ public class ImageAdapter extends BaseAdapter {
             ImageView imageView = gridView.findViewById(R.id.grid_item_image);
             imageView.setLayoutParams(new LinearLayout.LayoutParams((int)a4Width, (int)(a4Height - textSize * 9)));
 
-            if ((imageUris[position] != null)) {            //utilisé lors de l'initialisation et du changement de configuration
-                imageView.setImageURI(imageUris[position]);
+            if ((imageFiles[position] != null)) {            //utilisé lors de l'initialisation et du changement de configuration
+                Bitmap imageSource = IO_BitmapImage.readImage(imageFiles[position],maxSizeImage);
+                imageView.setImageBitmap(imageSource);
             } else {
                 imageView.setImageResource(imageId[position]);
             }
@@ -97,8 +98,9 @@ public class ImageAdapter extends BaseAdapter {
     private int freePositions(){      //calcul du nombre d'items non utilisés
         int free = 0;
         for(int i = 0; i<nbrItems; i++){
-            if (imageUris[i] == null) free++;
+            if (imageFiles[i] == null) free++;
         }
         return free;
     }
+
 }

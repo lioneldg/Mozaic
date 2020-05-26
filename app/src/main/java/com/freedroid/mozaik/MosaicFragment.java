@@ -1,40 +1,30 @@
 package com.freedroid.mozaik;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Path;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
@@ -47,127 +37,92 @@ import static android.app.Activity.RESULT_OK;
 //créer une static factory methode pour chaque fragment
 //creer un seekbar pour modifier le padding du gridView
 // choisir le taux de compression d'enregistrement de l'image
-// paramétrer le taux de compression d'affichage en fonction du taux de compression primaire et du nombre d'items
-//modifier l'acces aux images lors du redimentionement dans imageAdapter
+// paramétrer le taux de compression d'affichage en fonction de la qualité primaire et du nombre d'items
 //passer en java nio2 pour la lecture et l'écriture
+//si pas d'externalDir accessible prévenir l'utilisateur et utiliser le cache
+//utiliser pageFragment pour afficher les outils et vérouiller les fonctionnalités en fonction de l'affichage en cours
 
 
 
 public class MosaicFragment extends Fragment {
 
-    private int nbrItems = 0;
+    protected int nbrItems = 0;
     private int nbrColumns = 0;
     private String[] firstNames = null;
     private String[] lastNames = null;
     private int[] imageIds = null;
-    private Uri[] imageUris = null;
-    private ImageView imageCell = null;
-    private TextView firstName = null;
-    private TextView lastName = null;
-    private TextView textViewSeekBarNbrItems = null;
-    private SeekBar seekBarNbrItems = null;
+    private File[] sourcesFiles = null;
+    private TextView currentFirstName = null;
+    private TextView currentLastName = null;
     private GridView grid = null;
-    private ImageAdapter adapter = null;
-    private View view = null;
     private int currentSelection = -1;
-    private Button buttonMore = null;
-    private Button buttonLess = null;
-    private Date imageName= null;
+    private Date currentImageName = null;
+    private int maxSizeImage = 0;
+    private Button buttonQuality = null;
+    private boolean goodQualityImage = false;
+    private ViewPager2 viewPager = null;
 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        nbrItems = 100;
+        maxSizeImage = 30;
+        nbrItems = 100;                         //initialisation des 100 items
         firstNames = new String[100];
         lastNames = new String[100];
         imageIds = new int[100];
-        imageUris = new Uri[100];
+        sourcesFiles = new File[100];
 
-        for(int i = 0; i < nbrItems; i++) {
+        for(int i = 0; i < nbrItems; i++) {     //écriture de firstName et lastName sous chaque item
             firstNames[i] = "firstName";
             lastNames[i] = "lastName";
-            imageIds[i] = (i%2 == 0)? R.drawable.user_female : R.drawable.user_male;
+            imageIds[i] = (i%2 == 0)? R.drawable.user_female : R.drawable.user_male;    //alternace image femme / image homme
         }
     }
 
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        view = inflater.inflate(R.layout.mosaic_fragment_layout,container, false);
+        View view = inflater.inflate(R.layout.mosaic_fragment_layout, container, false);
 
-        setNbrColumns();                                     //calcule le nbr de colonnes necessaire pour afficher en format A4
 
-        textViewSeekBarNbrItems = view.findViewById(R.id.textNbrItems);
-        seekBarNbrItems = view.findViewById(R.id.seekBarNbrItems);
-        seekBarNbrItems.setProgress(nbrItems);
-        textViewSeekBarNbrItems.setText(String.valueOf(nbrItems));
-        buttonLess = view.findViewById(R.id.buttonLess);
-        buttonMore = view.findViewById(R.id.buttonMore);
+        nbrItems = 20;                                      // démarrer l'application à 20 items
 
-        buttonMore.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {               //clic sur le bouton +
-                if(seekBarNbrItems.getProgress() < 100){
-                    seekBarNbrItems.setProgress(seekBarNbrItems.getProgress() + 1);
-                    setNbrColumns();                        //calcule le nbr de colonnes necessaire pour afficher en format A4
-                    grid.setNumColumns(nbrColumns);         //paramètre le nbr de colonnes
-                    adapter = new ImageAdapter(getContext(), firstNames, lastNames, imageIds, imageUris, nbrColumns, nbrItems);
-                    grid.setAdapter(adapter);
+        //buttonQuality = view.findViewById(R.id.buttonQuality);!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        /*buttonQuality.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if(goodQualityImage == false) {
+                    maxSizeImage = 200;
+                    buttonQuality.setText("Show preview quality");
+                    setColumnsAndAdapter();
+                    goodQualityImage = true;
                 }
-
-            }
-        });
-
-        buttonLess.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {               //clic sur le bouton -
-                if(seekBarNbrItems.getProgress() > 1){
-                    seekBarNbrItems.setProgress(seekBarNbrItems.getProgress() - 1);
-                    setNbrColumns();                        //calcule le nbr de colonnes necessaire pour afficher en format A4
-                    grid.setNumColumns(nbrColumns);         //paramètre le nbr de colonnes
-                    adapter = new ImageAdapter(getContext(), firstNames, lastNames, imageIds, imageUris, nbrColumns, nbrItems);
-                    grid.setAdapter(adapter);
+                else{
+                    maxSizeImage = 30;
+                    buttonQuality.setText("Show good quality");
+                    setColumnsAndAdapter();
+                    goodQualityImage = false;
                 }
             }
-        });
+        });*/
 
-        //CALCUL DU FORMAT A4 pour appliquer à GridView
-        Display display = Objects.requireNonNull(getActivity()).getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        float a4Width = size.x;
-        float a4Height = a4Width*1.414f;
-
-        //première initialisation de la gridView (par la méthode onCreateView)
+        viewPager = view.findViewById(R.id.viewPager);
         grid = view.findViewById(R.id.PhotoGridView);
-        grid.setNumColumns(nbrColumns);         //paramètre le nbr de colonnes
-        grid.setLayoutParams(new ConstraintLayout.LayoutParams((int)a4Width, (int)a4Height));
-        adapter = new ImageAdapter(getContext(), firstNames, lastNames, imageIds, imageUris, nbrColumns, nbrItems);
-        grid.setAdapter(adapter);
+        FragmentStateAdapter adapter=  new PagerAdapter(this);
+        viewPager.setAdapter(adapter);
+
+        setGridLayoutParamsA4();                            //calcul du format A4 à appliquer au LayoutParams de GridView
+
+        setColumnsAndAdapter();                             //première initialisation de la gridView (par la méthode onCreateView)
+
         grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                imageCell = view.findViewById(R.id.grid_item_image);
-                firstName = view.findViewById(R.id.firstName);
-                lastName = view.findViewById(R.id.lastName);
+                currentFirstName = view.findViewById(R.id.firstName);
+                currentLastName = view.findViewById(R.id.lastName);
                 currentSelection = position;
                 choosePicture();
             }
         });
 
-        seekBarNbrItems.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                nbrItems = (progress == 0 )? 1: progress;       //empecher nbrItems = 0
-                textViewSeekBarNbrItems.setText(String.valueOf(nbrItems));
-            }
-
-            public void onStartTrackingTouch(SeekBar seekBar) { }
-
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                setNbrColumns();                        //calcule le nbr de colonnes necessaire pour afficher en format A4
-                grid.setNumColumns(nbrColumns);         //paramètre le nbr de colonnes
-                adapter = new ImageAdapter(getContext(), firstNames, lastNames, imageIds, imageUris, nbrColumns, nbrItems);
-                grid.setAdapter(adapter);
-
-            }
-        });
 
         return view;
     }
@@ -175,39 +130,46 @@ public class MosaicFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == 123 && resultCode == RESULT_OK) {     //choosePicture Activity result
-            Uri selectedFile = data.getData();
+            Uri selectedFile = data.getData();                  //data.getData retourne l'uri de l'image choisie par l'utilisateur
             Bitmap bitmapSelectedFile = null;
             try {
-                bitmapSelectedFile = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), selectedFile);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                bitmapSelectedFile = MediaStore.Images.Media.getBitmap(Objects.requireNonNull(getActivity()).getContentResolver(), selectedFile);   //récupération de l'image et convertion en bitmap
+            } catch (IOException e) { e.printStackTrace(); }
 
-            //enregistrement de l'image sélectionnée
-            imageName = Calendar.getInstance().getTime();                        //le nom du fichier image est la date précise
-            saveImage(bitmapSelectedFile, imageName.toString());
+            //enregistrement image
+            currentImageName = Calendar.getInstance().getTime();        //nom du fichier image = date précise
+            sourcesFiles[currentSelection] = IO_BitmapImage.saveImage(getActivity(),bitmapSelectedFile,currentImageName.toString(), 50);    //enregistrement de l'image sélectionnée avec plus basse qualité
 
-            //récupération de l'image enregistrée
+            //lecture image
+            ImageView currentImage = grid.getChildAt(currentSelection).findViewById(R.id.grid_item_image);
+            Bitmap imageSource = IO_BitmapImage.readImage(getContext(), currentImageName.toString(),maxSizeImage);//lecture et compression de l'image à afficher
+            currentImage.setImageBitmap(imageSource);
 
-
-
-            //appliquer l'image récupérée à l'ImageView en la compressant en fonction du nbr d'items et de la qualité de depart
-            ImageView img = grid.getChildAt(currentSelection).findViewById(R.id.grid_item_image);
-
-            imageUris[currentSelection] = selectedFile;                                 //enregistrement de l'uri de l'image sélectionné
-            readImage(imageName.toString());
-            //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-            setName();                                                                  //DialogEditText s'ouvre après sélection de la photo
+            setName();                                                  //DialogEditText s'ouvre après sélection de la photo
         }
         if(requestCode == 100 && resultCode == RESULT_OK){      //setName Activity result
-            firstName.setText(data.getStringExtra("firstName"));
-            lastName.setText(data.getStringExtra("lastName"));
+            currentFirstName.setText(data.getStringExtra("firstName"));
+            currentLastName.setText(data.getStringExtra("lastName"));
             firstNames[currentSelection] = data.getStringExtra("firstName");
             lastNames[currentSelection] = data.getStringExtra("lastName");
             currentSelection = -1;
         }
+    }
+
+    protected void setColumnsAndAdapter(){
+        setNbrColumns();                        //calcule le nbr de colonnes necessaire pour afficher en format A4
+        grid.setNumColumns(nbrColumns);         //paramètre le nbr de colonnes
+        ImageAdapter adapter = new ImageAdapter(getContext(), firstNames, lastNames, imageIds, sourcesFiles, nbrColumns, nbrItems, maxSizeImage);
+        grid.setAdapter(adapter);
+    }
+
+    private void setGridLayoutParamsA4(){       //calcul du format A4 à appliquer au LayoutParams de GridView
+        Display display = Objects.requireNonNull(getActivity()).getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        float a4Width = size.x;
+        float a4Height = a4Width*1.414f;
+        grid.setLayoutParams(new ConstraintLayout.LayoutParams((int)a4Width, (int)a4Height));
     }
 
     private void choosePicture(){
@@ -223,7 +185,7 @@ public class MosaicFragment extends Fragment {
         startActivityForResult(intent, 100);
     }
 
-    private void setNbrColumns(){
+    private void setNbrColumns(){           //calcule le nombre de colonnes necessaires pour afficher au format A4
         if(nbrItems == 1) nbrColumns = 1;
         else if (nbrItems > 1 && nbrItems < 5) nbrColumns = 2;
         else if (nbrItems > 4 && nbrItems < 10) nbrColumns = 3;
@@ -234,40 +196,5 @@ public class MosaicFragment extends Fragment {
         else if (nbrItems > 49 && nbrItems < 65) nbrColumns = 8;
         else if (nbrItems > 64 && nbrItems < 82) nbrColumns = 9;
         else nbrColumns = 10;
-    }
-
-    public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
-        int width = image.getWidth();
-        int height = image.getHeight();
-
-        float bitmapRatio = (float)width / (float) height;
-        if (bitmapRatio > 0) {
-            width = maxSize;
-            height = (int) (width / bitmapRatio);
-        } else {
-            height = maxSize;
-            width = (int) (height * bitmapRatio);
-        }
-        return Bitmap.createScaledBitmap(image, width, height, true);
-    }
-
-    private void saveImage (Bitmap bitmapSource, String name){
-        if(Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())){
-           File dest = new File(Objects.requireNonNull(getActivity()).getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), name);
-
-            try(FileOutputStream fos = new FileOutputStream(dest)){
-                bitmapSource.compress(Bitmap.CompressFormat.JPEG, 50, fos);           //CompressFormat.JPEG autorise à reduire la qualité contrairement à .PNG
-                fos.flush();
-            } catch (IOException e) { e.printStackTrace();Log.d("ERR",""+e.getMessage());}
-        }
-        else Toast.makeText(getActivity(), "Impossible d'accéder à la mémoire!!!", Toast.LENGTH_LONG).show();
-    }
-
-    private void readImage(String name){
-        if(Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) || Environment.MEDIA_MOUNTED_READ_ONLY.equals(Environment.getExternalStorageState())){
-            ImageView img = grid.getChildAt(currentSelection).findViewById(R.id.grid_item_image);
-            File source = new File(Objects.requireNonNull(getActivity()).getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), name);
-            img.setImageBitmap(getResizedBitmap(BitmapFactory.decodeFile(source.getPath()),100));       //affiche une image compressée pour ne pas trop charger l'application. Cette image est extraite avec BitmapFactory.decodeFile(
-        }
     }
 }
