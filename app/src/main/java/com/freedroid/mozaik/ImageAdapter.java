@@ -12,6 +12,9 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.viewpager2.widget.ViewPager2;
+
 import java.io.File;
 
 public class ImageAdapter extends BaseAdapter {
@@ -25,17 +28,21 @@ public class ImageAdapter extends BaseAdapter {
     private float textSize;
     private int nbrItems;
     private int maxSizeImage;
+    private int padding;
+    private ViewPager2 viewPager;
 
-    ImageAdapter(Context c, String[] firstName, String[] lastName, int[] imageId, File imageFiles[], int nbrColumns, int nbrItems, int maxSizeImage) {
+    ImageAdapter(Context c, String[] firstName, String[] lastName, int[] imageId, File imageFiles[], int nbrColumns, int nbrItems, int maxSizeImage, int padding, ViewPager2 viewPager) {
         mContext = c;
         this.imageId = imageId;
         this.imageFiles = imageFiles;
         this.firstName = firstName;
         this.lastName = lastName;
         this.nbrColumns = nbrColumns;
-        this.textSize = 30.0f/(float)nbrColumns;
+        this.textSize = (40.0f/(float)nbrColumns) - (padding/20.0f);    //la taille du texte est adaptée au nb de colonnes et au padding
         this.nbrItems = nbrItems;
         this.maxSizeImage = maxSizeImage;
+        this.padding = padding;
+        this.viewPager = viewPager;
     }
 
     public int getCount() {
@@ -75,12 +82,12 @@ public class ImageAdapter extends BaseAdapter {
             TextView textViewLastName = gridView.findViewById(R.id.lastName);
             textViewLastName.setText(lastName[position]);
             textViewLastName.setTextSize(textSize);
-
+            gridView.setPaddingRelative(padding,padding,padding,padding);
 
             ImageView imageView = gridView.findViewById(R.id.grid_item_image);
-            imageView.setLayoutParams(new LinearLayout.LayoutParams((int)a4Width, (int)(a4Height - textSize * 9)));
+            imageView.setLayoutParams(new LinearLayout.LayoutParams((int)a4Width - padding*2, (int)(a4Height - padding*2 - textSize * 9)));//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-            if ((imageFiles[position] != null)) {            //utilisé lors de l'initialisation et du changement de configuration
+            if ((imageFiles[position] != null) && viewPager.getCurrentItem() != 0) {            //utilisé lors de l'initialisation et du changement de configuration
                 Bitmap imageSource = IO_BitmapImage.readImage(imageFiles[position],maxSizeImage);
                 imageView.setImageBitmap(imageSource);
             } else {

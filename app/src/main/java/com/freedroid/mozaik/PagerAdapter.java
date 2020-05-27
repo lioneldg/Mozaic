@@ -17,7 +17,7 @@ public class PagerAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         if(position == 0)return(new StructureFragment(mosaicFragment));
         else if(position == 1)return(new StructureFragment(mosaicFragment));
-        else if(position == 2)return(new StructureFragment(mosaicFragment));
+        else if(position == 2)return(new FinalizationFragment(mosaicFragment));
         else return new StructureFragment(mosaicFragment);
     }
 

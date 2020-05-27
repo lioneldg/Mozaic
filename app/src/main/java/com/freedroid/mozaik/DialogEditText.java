@@ -15,7 +15,6 @@ public class DialogEditText extends AppCompatActivity {
     EditText firstName = null;
     EditText lastName = null;
     Button buttonOK = null;
-    Button buttonCANCEL = null;
 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,17 +23,6 @@ public class DialogEditText extends AppCompatActivity {
         firstName = findViewById(R.id.editTextFirstName);
         lastName = findViewById(R.id.editTextLastName);
         buttonOK = findViewById(R.id.buttonOK);
-        buttonCANCEL = findViewById(R.id.buttonCANCEL);
-
-        buttonCANCEL.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent result = new Intent();
-                result.putExtra("firstName", "");   //ne pas afficher nom et prenom
-                result.putExtra("lastName", "");
-                setResult(RESULT_OK, result);
-                finish();
-            }
-        });
 
         buttonOK.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
