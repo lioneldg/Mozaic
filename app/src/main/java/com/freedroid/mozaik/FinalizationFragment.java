@@ -11,8 +11,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 public class FinalizationFragment extends Fragment {
-    private Button buttonQuality = null;
-    private MosaicFragment mosaicFragment = null;
+    private MosaicFragment mosaicFragment;
+    private Button buttonRefit;
 
     public FinalizationFragment(MosaicFragment mosaicFragment) {
         this.mosaicFragment = mosaicFragment;
@@ -26,20 +26,12 @@ public class FinalizationFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.finalization_fragment_layout, container, false);
-
-        buttonQuality = view.findViewById(R.id.buttonQuality);
-
-        buttonQuality.setOnClickListener(new View.OnClickListener() {
+        buttonRefit = view.findViewById(R.id.buttonRefit);
+        buttonRefit.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if(!mosaicFragment.goodQualityImage) {
-                    mosaicFragment.maxSizeImage = mosaicFragment.maxSizeImageFinal;   //augmente la qualité de l'image par rapport à la qualité primaire et donc au nombre d'items
-                    mosaicFragment.setColumnsAndAdapter();
-                    mosaicFragment.goodQualityImage = true;
-                }
+                mosaicFragment.refit();
             }
         });
-
-
         return view;
     }
 }

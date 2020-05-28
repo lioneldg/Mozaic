@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Display;
@@ -12,11 +13,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,13 +34,10 @@ import static android.app.Activity.RESULT_OK;
 //prévoir de developper l'orientation au format paysage (et débloquer l'orientation dans le manifest)
 //mettre en place ROOM pour conserver les infos des clients
 //créer un RV pour lister les clients en BDD et pouvoir les selectionner
-//passer en java nio2 pour la lecture et l'écriture!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //si pas d'externalDir accessible prévenir l'utilisateur et utiliser le cache!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//limiter le padding en fonction du nbr d'items!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//créer un bouton refit pour retirer les espaces vides!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //desenregistrer le lister de viewPager lors de la gestion du cycle de vie
+//mettre en place la fonction screenshot sur la 3eme vue de ViewPager
 
-// FAIT !!!!paramétrer le taux de compression maxSizeImage en fonction du nombre d'items!!!!!!!!!!!!!!!!!L70  maxSizeImageFull, et L195 dans setNbrColumns()
 
 
 public class MosaicFragment extends Fragment {
@@ -57,19 +53,17 @@ public class MosaicFragment extends Fragment {
     protected GridView grid = null;
     private int currentSelection = -1;
     private Date currentImageName = null;
-    protected int currentMaxSizeImage = 0;
-    private int maxSizeImageFull = 0;
-    private int maxSizeImageReduced = 0;
-    protected int maxSizeImageFinal = 0;
+    protected int currentSizeImage = 0;
+    private int sizeImageFull = 0;
     private ViewPager2 viewPager = null;
     protected int padding = 0;
     Point windowSize = null;
-    protected boolean goodQualityImage = false;
+    protected int oldPositionViewPager = -1;
 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         windowSize = new Point();
-        maxSizeImageFull = 800;
+        sizeImageFull = 800;
         nbrItems = 100;                         //initialisation des 100 items
         firstNames = new String[100];
         lastNames = new String[100];
@@ -113,19 +107,35 @@ public class MosaicFragment extends Fragment {
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {//désenregistre ce listener!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 super.onPageScrolled(position, positionOffset, positionOffsetPixels);
                 switch (position){
-                    case 0:                                 //première vue
-                        grid.setEnabled(false);             //interdit de sélectionner des photos
-                        setColumnsAndAdapter();             //le but ici est de choisir sa mise en page
-                        break;
+                    case 0:                                     //première vue
+                        if(oldPositionViewPager != position) {
+                            oldPositionViewPager = position;    //permet de n'effectuer le code qu'une seule fois par page
+                            grid.setEnabled(false);             //interdit de sélectionner des photos
+                            setColumnsAndAdapter();             //le but ici est de choisir sa mise en page
+                            Log.d("DEBUG","position 0 "+position);
+                            break;
+                        }
                     case 1:
-                        grid.setEnabled(true);              //deuxieme vue
-                        currentMaxSizeImage = maxSizeImageReduced; //la qualité des images affichée est très basse (pixélisée) pour ne pas surcharger la mémoire
-                        goodQualityImage = false;           //c'est dans cette vue qu'on choisis les photos à afficher
-                        setColumnsAndAdapter();
-                        break;
+                        if(oldPositionViewPager != position && oldPositionViewPager == 0) {
+                            oldPositionViewPager = position;    //permet de n'effectuer le code qu'une seule fois par page
+                            grid.setEnabled(true);              //deuxieme vue, c'est dans cette vue qu'on choisis les photos à afficher
+                            setColumnsAndAdapter();
+                            Log.d("DEBUG","position 1 "+position);
+                            break;
+                        }
+                        else if(oldPositionViewPager != position && oldPositionViewPager == 2){
+                            oldPositionViewPager = position;    //permet de n'effectuer le code qu'une seule fois par page
+                            grid.setEnabled(true);              //deuxieme vue, c'est dans cette vue qu'on choisis les photos à afficher
+                            Log.d("DEBUG","position 1 "+position);
+                            break;
+                        }
                     case 2:
-                        grid.setEnabled(false);             //troisième vue
-                }                                           //c'est ici que l'on affiche les photos en bonne qualité et que l'on peux en extraire un screenshot format A4
+                        if(oldPositionViewPager != position) {
+                            oldPositionViewPager = position;    //permet de n'effectuer le code qu'une seule fois par page
+                            grid.setEnabled(false);             //troisième vue, c'est ici que l'on affiche les photos en bonne qualité et que l'on peux en extraire un screenshot format A4
+                            Log.d("DEBUG","position 2 "+position);
+                        }
+                }
             }
         });
 
@@ -141,16 +151,24 @@ public class MosaicFragment extends Fragment {
                 bitmapSelectedFile = MediaStore.Images.Media.getBitmap(Objects.requireNonNull(getActivity()).getContentResolver(), selectedFile);   //récupération de l'image et convertion en bitmap
             } catch (IOException e) { e.printStackTrace(); }
 
-            //enregistrement image
-            currentImageName = Calendar.getInstance().getTime();                //nom du fichier image = date précise
-            assert bitmapSelectedFile != null;
-            float quality = 115000.0f/bitmapSelectedFile.getWidth();            //ajuste la qualité pour enregistrer une image moins lourde
-            sourcesFiles[currentSelection] = IO_BitmapImage.saveImage(getActivity(),bitmapSelectedFile,currentImageName.toString()+".JPEG", (int)quality);    //enregistrement de l'image sélectionnée avec plus basse qualité
+            //enregistrement et lecture image
+            Handler handlerSaveAndRead = new Handler();
+            final Bitmap finalBitmapSelectedFile = bitmapSelectedFile;
+            Runnable runnableSaveAndRead = new Runnable() {
+                public void run() {
+                    //enregistrement image
+                    currentImageName = Calendar.getInstance().getTime();                            //nom du fichier image = date précise
+                    assert finalBitmapSelectedFile != null;
+                    final float quality = 115000.0f/ finalBitmapSelectedFile.getWidth();            //ajuste la qualité pour enregistrer une image moins lourde
+                    sourcesFiles[currentSelection] = IO_BitmapImage.saveImage(getActivity(), finalBitmapSelectedFile,currentImageName.toString()+".JPEG", (int)quality);    //enregistrement de l'image sélectionnée avec plus basse qualité
 
-            //lecture image
-            ImageView currentImage = grid.getChildAt(currentSelection).findViewById(R.id.grid_item_image);
-            Bitmap imageSource = IO_BitmapImage.readImage(getContext(), currentImageName.toString()+".JPEG",currentMaxSizeImage);//lecture et compression de l'image à afficher
-            currentImage.setImageBitmap(imageSource);
+                    //lecture image
+                    final ImageView currentImage = grid.getChildAt(currentSelection).findViewById(R.id.grid_item_image);
+                    Bitmap imageSource = IO_BitmapImage.readImage(getContext(), currentImageName.toString()+".JPEG", currentSizeImage);//lecture et compression de l'image à afficher
+                    currentImage.setImageBitmap(imageSource);
+                }
+            };
+            handlerSaveAndRead.post(runnableSaveAndRead);
 
             setName();                                                  //DialogEditText s'ouvre après sélection de la photo
         }
@@ -171,7 +189,7 @@ public class MosaicFragment extends Fragment {
     protected void setColumnsAndAdapter(){
         setNbrColumns();                        //calcule le nbr de colonnes necessaire pour afficher en format A4
         grid.setNumColumns(nbrColumns);         //paramètre le nbr de colonnes
-        ImageAdapter adapter = new ImageAdapter(getContext(), firstNames, lastNames, imageIds, sourcesFiles, nbrColumns, nbrItems, currentMaxSizeImage, padding, viewPager);
+        ImageAdapter adapter = new ImageAdapter(getContext(), firstNames, lastNames, imageIds, sourcesFiles, nbrColumns, nbrItems, currentSizeImage, padding, viewPager, oldPositionViewPager);
         grid.setAdapter(adapter);
     }
 
@@ -195,56 +213,39 @@ public class MosaicFragment extends Fragment {
     }
 
     private void setNbrColumns(){           //calcule le nombre de colonnes necessaires pour afficher au format A4
-        float compress = 5.0f;              //compression des images de previsualisation
-        if(nbrItems == 1){
-            maxSizeImageReduced = maxSizeImageFull;
-            maxSizeImageFinal = maxSizeImageFull;
-            nbrColumns = 1;
+        if(nbrItems == 1) nbrColumns = 1;
+        else if (nbrItems > 1 && nbrItems < 5)   nbrColumns = 2;
+        else if (nbrItems > 4 && nbrItems < 10)  nbrColumns = 3;
+        else if (nbrItems > 9 && nbrItems < 17)  nbrColumns = 4;
+        else if (nbrItems > 16 && nbrItems < 26) nbrColumns = 5;
+        else if (nbrItems > 25 && nbrItems < 37) nbrColumns = 6;
+        else if (nbrItems > 36 && nbrItems < 50) nbrColumns = 7;
+        else if (nbrItems > 49 && nbrItems < 65) nbrColumns = 8;
+        else if (nbrItems > 64 && nbrItems < 82) nbrColumns = 9;
+        else nbrColumns = 10;
+
+        currentSizeImage = (int)((float) sizeImageFull /nbrColumns); //ajuste la taille (poids) de l'image à afficher
+    }
+
+    private int freePositions(){      //calcul du nombre d'items non utilisés
+        int free = 0;
+        for(int i = 0; i<nbrItems; i++){
+            if (sourcesFiles[i] == null) free++;
         }
-        else if (nbrItems > 1 && nbrItems < 5){
-            maxSizeImageReduced = (int)((float) maxSizeImageFull/(2.0f*compress));
-            maxSizeImageFinal = (int)((float) maxSizeImageFull/2.0f);
-            nbrColumns = 2;
-        }
-        else if (nbrItems > 4 && nbrItems < 10){
-            maxSizeImageReduced = (int)((float) maxSizeImageFull/(3.0f*compress));
-            maxSizeImageFinal = (int)((float) maxSizeImageFull/3.0f);
-            nbrColumns = 3;
-        }
-        else if (nbrItems > 9 && nbrItems < 17){
-            maxSizeImageReduced = (int)((float) maxSizeImageFull/(4.0f*compress));
-            maxSizeImageFinal = (int)((float) maxSizeImageFull/4.0f);
-            nbrColumns = 4;
-        }
-        else if (nbrItems > 16 && nbrItems < 26){
-            maxSizeImageReduced = (int)((float) maxSizeImageFull/(5.0f*compress));
-            maxSizeImageFinal = (int)((float) maxSizeImageFull/5.0f);
-            nbrColumns = 5;
-        }
-        else if (nbrItems > 25 && nbrItems < 37){
-            maxSizeImageReduced = (int)((float) maxSizeImageFull/(6.0f*compress));
-            maxSizeImageFinal = (int)((float) maxSizeImageFull/6.0f);
-            nbrColumns = 6;
-        }
-        else if (nbrItems > 36 && nbrItems < 50){
-            maxSizeImageReduced = (int)((float) maxSizeImageFull/(7.0f*compress));
-            maxSizeImageFinal = (int)((float) maxSizeImageFull/7.0f);
-            nbrColumns = 7;
-        }
-        else if (nbrItems > 49 && nbrItems < 65){
-            maxSizeImageReduced = (int)((float) maxSizeImageFull/(8.0f*compress));
-            maxSizeImageFinal = (int)((float) maxSizeImageFull/8.0f);
-            nbrColumns = 8;
-        }
-        else if (nbrItems > 64 && nbrItems < 82){
-            maxSizeImageReduced = (int)((float) maxSizeImageFull/(9.0f*compress));
-            maxSizeImageFinal = (int)((float) maxSizeImageFull/9.0f);
-            nbrColumns = 9;
-        }
-        else{
-            maxSizeImageReduced = (int)((float) maxSizeImageFull/(10.0f*compress));
-            maxSizeImageFinal = (int)((float) maxSizeImageFull/10.0f);
-            nbrColumns = 10;
-        }
+        return free;
+    }
+
+    protected void refit(){
+        int freePos = freePositions();
+            for (int f = 0; f < freePos; f++) {
+                for (int i = 0; i < nbrItems; i++) {
+                    if (sourcesFiles[i] == null && i < 99) {  //i != 100 evite  d'obtenir un nullpointer
+                        sourcesFiles[i] = sourcesFiles[i + 1];  //si l'image est null on copie l'image de l'emplacement suivant
+                        sourcesFiles[i + 1] = null;             //on supprime l'image de l'emplacement suivant pour ne pas avoir de doublon
+                    }
+                }
+            }
+        nbrItems -= freePos;
+        setColumnsAndAdapter();
     }
 }

@@ -14,6 +14,8 @@ import java.util.Objects;
 
 public class IO_BitmapImage {
 
+
+
     public static Bitmap readImage(Context context, String name, int maxSize) {
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) || Environment.MEDIA_MOUNTED_READ_ONLY.equals(Environment.getExternalStorageState())) {
             File source = new File(Objects.requireNonNull(context).getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), name);

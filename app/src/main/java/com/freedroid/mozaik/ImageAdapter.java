@@ -3,6 +3,8 @@ package com.freedroid.mozaik;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.os.Handler;
+import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,8 +32,9 @@ public class ImageAdapter extends BaseAdapter {
     private int maxSizeImage;
     private int padding;
     private ViewPager2 viewPager;
+    private int positionViewPager;
 
-    ImageAdapter(Context c, String[] firstName, String[] lastName, int[] imageId, File imageFiles[], int nbrColumns, int nbrItems, int maxSizeImage, int padding, ViewPager2 viewPager) {
+    ImageAdapter(Context c, String[] firstName, String[] lastName, int[] imageId, File imageFiles[], int nbrColumns, int nbrItems, int maxSizeImage, int padding, ViewPager2 viewPager, int positionViewPager) {
         mContext = c;
         this.imageId = imageId;
         this.imageFiles = imageFiles;
@@ -43,6 +46,7 @@ public class ImageAdapter extends BaseAdapter {
         this.maxSizeImage = maxSizeImage;
         this.padding = padding;
         this.viewPager = viewPager;
+        this.positionViewPager = positionViewPager; //récupère oldPositionViewpager pour connaitre la position du viewPager sans le décalage causé par le filtre posé dans mozaicFragment pour éviter les répétitons de code du lister de ViewPager
     }
 
     public int getCount() {
@@ -57,7 +61,7 @@ public class ImageAdapter extends BaseAdapter {
         return 0;
     }
 
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View gridView;
 
@@ -84,21 +88,32 @@ public class ImageAdapter extends BaseAdapter {
             textViewLastName.setTextSize(textSize);
             gridView.setPaddingRelative(padding,padding,padding,padding);
 
-            ImageView imageView = gridView.findViewById(R.id.grid_item_image);
+            final ImageView imageView = gridView.findViewById(R.id.grid_item_image);
             imageView.setLayoutParams(new LinearLayout.LayoutParams((int)a4Width - padding*2, (int)(a4Height - padding*2 - textSize * 9)));//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-            if ((imageFiles[position] != null) && viewPager.getCurrentItem() != 0) {            //utilisé lors de l'initialisation et du changement de configuration
-                Bitmap imageSource = IO_BitmapImage.readImage(imageFiles[position],maxSizeImage);
-                imageView.setImageBitmap(imageSource);
+            Handler handlerRead = new Handler();
+            if ((imageFiles[position] != null) && positionViewPager != 0) {            //utilisé lors de l'initialisation et du changement de configuration
+                final Bitmap[] imageSource = {null};
+                Runnable runnableRead = new Runnable() {
+                    public void run() {
+                        imageSource[0] = IO_BitmapImage.readImage(imageFiles[position],maxSizeImage);
+                        imageView.setImageBitmap(imageSource[0]);
+                    }
+                };
+                handlerRead.post(runnableRead);
+                Log.d("DEBUG","current item = "+positionViewPager);
             } else {
-                imageView.setImageResource(imageId[position]);
+                Runnable runnableRead = new Runnable() {
+                    public void run() {
+                        imageView.setImageResource(imageId[position]);
+                    }
+                };
+                handlerRead.post(runnableRead);
             }
         }
         else {
             gridView = convertView;
         }
-
-
         return gridView;
     }
 
@@ -108,6 +123,16 @@ public class ImageAdapter extends BaseAdapter {
             if (imageFiles[i] == null) free++;
         }
         return free;
+    }
+
+    private void refit(){
+        for(int i = 0; i<nbrItems; i++){
+            if (imageFiles[i] == null){
+                imageFiles[i] = imageFiles[i+1];    //si l'image est null on copie l'image de l'emplacement suivant
+                imageFiles[i+1] = null;             //on supprime l'image de l'emplacement suivant pour ne pas avoir de doublon
+            }
+        }
+        //supprimer les derniers vides en copmptant avec freepositions!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     }
 
 }
