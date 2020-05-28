@@ -242,6 +242,10 @@ public class MosaicFragment extends Fragment {
                     if (sourcesFiles[i] == null && i < 99) {  //i != 100 evite  d'obtenir un nullpointer
                         sourcesFiles[i] = sourcesFiles[i + 1];  //si l'image est null on copie l'image de l'emplacement suivant
                         sourcesFiles[i + 1] = null;             //on supprime l'image de l'emplacement suivant pour ne pas avoir de doublon
+                        firstNames[i] = firstNames[i + 1];
+                        firstNames[i + 1] = "first name";
+                        lastNames[i] = lastNames[i + 1];
+                        lastNames[i + 1] = "last name";
                     }
                 }
             }
