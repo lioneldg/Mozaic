@@ -2,8 +2,12 @@ package com.freedroid.mozaik;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
+import android.graphics.fonts.Font;
+import android.graphics.fonts.Font.Builder;
+import android.graphics.fonts.FontFamily;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Display;
@@ -34,8 +38,9 @@ public class ImageAdapter extends BaseAdapter {
     private int positionViewPager;
     private boolean textBold;
     private Boolean textItalic;
+    private int colorText;
 
-    ImageAdapter(Context c, String[] firstName, String[] lastName, int[] imageId, File imageFiles[], int nbrColumns, int nbrItems, int maxSizeImage, int padding, ViewPager2 viewPager, int positionViewPager, float textSize, boolean textBold, boolean textItalic) {
+    ImageAdapter(Context c, String[] firstName, String[] lastName, int[] imageId, File imageFiles[], int nbrColumns, int nbrItems, int maxSizeImage, int padding, ViewPager2 viewPager, int positionViewPager, float textSize, boolean textBold, boolean textItalic, int colorText) {
         mContext = c;
         this.imageId = imageId;
         this.imageFiles = imageFiles;
@@ -50,6 +55,7 @@ public class ImageAdapter extends BaseAdapter {
         this.positionViewPager = positionViewPager; //récupère oldPositionViewpager pour connaitre la position du viewPager sans le décalage causé par le filtre posé dans mozaicFragment pour éviter les répétitons de code du lister de ViewPager
         this.textBold = textBold;
         this.textItalic = textItalic;
+        this.colorText = colorText;
     }
 
     public int getCount() {
@@ -85,10 +91,12 @@ public class ImageAdapter extends BaseAdapter {
             TextView textViewFirstName = gridView.findViewById(R.id.firstName);
             textViewFirstName.setText(firstName[position]);
             textViewFirstName.setTextSize(textSize);
+            textViewFirstName.setTextColor(colorText);
 
             TextView textViewLastName = gridView.findViewById(R.id.lastName);
             textViewLastName.setText(lastName[position]);
             textViewLastName.setTextSize(textSize);
+            textViewLastName.setTextColor(colorText);
 
             if(textBold && !textItalic){
                 textViewFirstName.setTypeface(textViewFirstName.getTypeface(), Typeface.BOLD);

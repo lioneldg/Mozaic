@@ -2,6 +2,7 @@ package com.freedroid.mozaik;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
@@ -63,11 +64,13 @@ public class MosaicFragment extends Fragment {
     protected float textSize = 0;
     protected boolean textBold = false;
     protected boolean textItalic = false;
+    protected int colorText = 0;
 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         windowSize = new Point();
         textSize = 30;
+        colorText = Color.BLACK;
         sizeImageFull = 800;
         nbrItems = 100;                         //initialisation des 100 items
         firstNames = new String[100];
@@ -191,7 +194,7 @@ public class MosaicFragment extends Fragment {
     protected void setColumnsAndAdapter(){
         setNbrColumns();                        //calcule le nbr de colonnes necessaire pour afficher en format A4
         grid.setNumColumns(nbrColumns);         //paramètre le nbr de colonnes
-        ImageAdapter adapter = new ImageAdapter(getContext(), firstNames, lastNames, imageIds, sourcesFiles, nbrColumns, nbrItems, currentSizeImage, padding, viewPager, oldPositionViewPager, textSize, textBold, textItalic);
+        ImageAdapter adapter = new ImageAdapter(getContext(), firstNames, lastNames, imageIds, sourcesFiles, nbrColumns, nbrItems, currentSizeImage, padding, viewPager, oldPositionViewPager, textSize, textBold, textItalic, colorText);
         grid.setAdapter(adapter);
     }
 
