@@ -19,6 +19,7 @@ public class StructureFragment extends Fragment {
     private MosaicFragment mosaicFragment;
     private RadioButton radioNumberItems;
     private RadioButton radioPadding;
+    private RadioButton radioTextSize;
 
     StructureFragment(MosaicFragment mosaicFragment) {
         this.mosaicFragment = mosaicFragment;
@@ -38,6 +39,7 @@ public class StructureFragment extends Fragment {
         Button buttonMore = view.findViewById(R.id.buttonMore);
         radioNumberItems = view.findViewById(R.id.radioNumberItems);
         radioPadding = view.findViewById(R.id.radioPadding);
+        radioTextSize = view.findViewById(R.id.radioTextSize);
 
         seekBar.setProgress(mosaicFragment.nbrItems);
         textViewSeekBar.setText(String.valueOf(mosaicFragment.nbrItems));
@@ -83,10 +85,15 @@ public class StructureFragment extends Fragment {
                     mosaicFragment.nbrItems = (progress == 0) ? 1 : progress;   //empecher nbrItems = 0
                     textViewSeekBar.setText(String.valueOf(mosaicFragment.nbrItems));
                 }
-                if (radioPadding.isChecked()) {                                 //modification du padding
+                if(radioPadding.isChecked()) {                                 //modification du padding
                     mosaicFragment.padding = progress;
                     textViewSeekBar.setText(String.valueOf(mosaicFragment.padding));
                     mosaicFragment.setColumnsAndAdapter();                      //modification du padding en temps réel
+                }
+                if(radioTextSize.isChecked()){
+                    mosaicFragment.textSize = (float)progress/2;
+                    textViewSeekBar.setText(String.valueOf(mosaicFragment.textSize));
+                    mosaicFragment.setColumnsAndAdapter();                      //modification du textSize en temps réel
                 }
             }
 
@@ -110,6 +117,13 @@ public class StructureFragment extends Fragment {
             public void onClick(View v) {
                 seekBar.setProgress(mosaicFragment.padding);
                 textViewSeekBar.setText(String.valueOf(mosaicFragment.padding));
+            }
+        });
+
+        radioTextSize.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                seekBar.setProgress((int)mosaicFragment.textSize*2);
+                textViewSeekBar.setText(String.valueOf(mosaicFragment.textSize));
             }
         });
         return view;

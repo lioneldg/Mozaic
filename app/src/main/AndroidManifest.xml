@@ -4,7 +4,8 @@
     package="com.freedroid.mozaik">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"  />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
 
     <application
         android:icon="@drawable/user_female"
@@ -12,7 +13,14 @@
         android:roundIcon="@drawable/user_female"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity" android:configChanges="orientation" android:screenOrientation="portrait"
+        <activity
+            android:name=".DialogInfo"
+            android:label="@string/title_activity_dialog_info"
+            android:theme="@style/Theme.AppCompat.Dialog" />
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,9 +28,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".DialogEditText" android:theme="@style/Theme.AppCompat.Dialog"/>
-        
+        <activity
+            android:name=".IdentityDialogEditText"
+            android:theme="@style/Theme.AppCompat.Dialog" />
+        <activity
+            android:name=".ExportDialogEditText"
+            android:theme="@style/Theme.AppCompat.Dialog" />
     </application>
 
 </manifest>

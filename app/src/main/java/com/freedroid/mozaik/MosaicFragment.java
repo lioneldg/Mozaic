@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,13 +32,13 @@ import java.util.Date;
 import java.util.Objects;
 import static android.app.Activity.RESULT_OK;
 
-//prévoir de developper l'orientation au format paysage (et débloquer l'orientation dans le manifest)
 //mettre en place ROOM pour conserver les infos des clients
 //créer un RV pour lister les clients en BDD et pouvoir les selectionner
-//si pas d'externalDir accessible prévenir l'utilisateur et utiliser le cache!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//desenregistrer le lister de viewPager lors de la gestion du cycle de vie
-//mettre en place la fonction screenshot sur la 3eme vue de ViewPager
-
+//desenregistrer le listener de viewPager lors de la gestion du cycle de vie
+//choix de couleur du fond
+//choix de couleur des noms
+//choix de la taille des noms
+//bloquer tout enregistrement en BDD et en A4 si on travaille en internalDir
 
 
 public class MosaicFragment extends Fragment {
@@ -47,7 +48,7 @@ public class MosaicFragment extends Fragment {
     private String[] firstNames = null;
     private String[] lastNames = null;
     private int[] imageIds = null;
-    private File[] sourcesFiles = null;
+    protected File[] sourcesFiles = null;
     private TextView currentFirstName = null;
     private TextView currentLastName = null;
     protected GridView grid = null;
@@ -59,10 +60,14 @@ public class MosaicFragment extends Fragment {
     protected int padding = 0;
     Point windowSize = null;
     protected int oldPositionViewPager = -1;
+    protected float textSize = 0;
+    protected boolean textBold = false;
+    protected boolean textItalic = false;
 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         windowSize = new Point();
+        textSize = 30;
         sizeImageFull = 800;
         nbrItems = 100;                         //initialisation des 100 items
         firstNames = new String[100];
@@ -71,8 +76,8 @@ public class MosaicFragment extends Fragment {
         sourcesFiles = new File[100];
 
         for(int i = 0; i < nbrItems; i++) {     //écriture de firstName et lastName sous chaque item
-            firstNames[i] = "firstName";
-            lastNames[i] = "lastName";
+            firstNames[i] = "First name";
+            lastNames[i] = "Last name";
             imageIds[i] = (i%2 == 0)? R.drawable.user_female : R.drawable.user_male;    //alternace image femme / image homme
         }
     }
@@ -111,29 +116,25 @@ public class MosaicFragment extends Fragment {
                         if(oldPositionViewPager != position) {
                             oldPositionViewPager = position;    //permet de n'effectuer le code qu'une seule fois par page
                             grid.setEnabled(false);             //interdit de sélectionner des photos
-                            setColumnsAndAdapter();             //le but ici est de choisir sa mise en page
-                            Log.d("DEBUG","position 0 "+position);
                             break;
                         }
                     case 1:
-                        if(oldPositionViewPager != position && oldPositionViewPager == 0) {
+                        if(oldPositionViewPager != position && oldPositionViewPager == 2) {
                             oldPositionViewPager = position;    //permet de n'effectuer le code qu'une seule fois par page
-                            grid.setEnabled(true);              //deuxieme vue, c'est dans cette vue qu'on choisis les photos à afficher
-                            setColumnsAndAdapter();
-                            Log.d("DEBUG","position 1 "+position);
+                            grid.setEnabled(false);              //deuxieme vue, c'est dans cette vue qu'on choisis les photos à afficher
+                            setColumnsAndAdapter();             //le but ici est de choisir sa mise en page
                             break;
                         }
-                        else if(oldPositionViewPager != position && oldPositionViewPager == 2){
+                        else if(oldPositionViewPager != position){
                             oldPositionViewPager = position;    //permet de n'effectuer le code qu'une seule fois par page
-                            grid.setEnabled(true);              //deuxieme vue, c'est dans cette vue qu'on choisis les photos à afficher
-                            Log.d("DEBUG","position 1 "+position);
+                            grid.setEnabled(false);              //deuxieme vue, c'est dans cette vue qu'on choisis les photos à afficher
                             break;
                         }
                     case 2:
                         if(oldPositionViewPager != position) {
                             oldPositionViewPager = position;    //permet de n'effectuer le code qu'une seule fois par page
-                            grid.setEnabled(false);             //troisième vue, c'est ici que l'on affiche les photos en bonne qualité et que l'on peux en extraire un screenshot format A4
-                            Log.d("DEBUG","position 2 "+position);
+                            grid.setEnabled(true);             //troisième vue, c'est ici que l'on affiche les photos en bonne qualité et que l'on peux en extraire un screenshot format A4
+                            setColumnsAndAdapter();
                         }
                 }
             }
@@ -158,20 +159,21 @@ public class MosaicFragment extends Fragment {
                 public void run() {
                     //enregistrement image
                     currentImageName = Calendar.getInstance().getTime();                            //nom du fichier image = date précise
-                    assert finalBitmapSelectedFile != null;
-                    final float quality = 115000.0f/ finalBitmapSelectedFile.getWidth();            //ajuste la qualité pour enregistrer une image moins lourde
-                    sourcesFiles[currentSelection] = IO_BitmapImage.saveImage(getActivity(), finalBitmapSelectedFile,currentImageName.toString()+".JPEG", (int)quality);    //enregistrement de l'image sélectionnée avec plus basse qualité
+                    try {
+                        sourcesFiles[currentSelection] = IO_BitmapImage.saveImage(getActivity(), finalBitmapSelectedFile,currentImageName.toString(), false);    //enregistrement de l'image sélectionnée avec plus basse qualité
+                    } catch (IOException e) { e.printStackTrace(); }
 
                     //lecture image
                     final ImageView currentImage = grid.getChildAt(currentSelection).findViewById(R.id.grid_item_image);
-                    Bitmap imageSource = IO_BitmapImage.readImage(getContext(), currentImageName.toString()+".JPEG", currentSizeImage);//lecture et compression de l'image à afficher
+                    Bitmap imageSource = IO_BitmapImage.readImage(getContext(), currentImageName.toString(), currentSizeImage);//lecture et compression de l'image à afficher
                     currentImage.setImageBitmap(imageSource);
                 }
             };
             handlerSaveAndRead.post(runnableSaveAndRead);
 
-            setName();                                                  //DialogEditText s'ouvre après sélection de la photo
+            setName();                                                  //IdentityDialogEditText s'ouvre après sélection de la photo
         }
+
         if(requestCode == 100 && resultCode == RESULT_OK){      //setName Activity result
             currentFirstName.setText(data.getStringExtra("firstName"));
             currentLastName.setText(data.getStringExtra("lastName"));
@@ -189,7 +191,7 @@ public class MosaicFragment extends Fragment {
     protected void setColumnsAndAdapter(){
         setNbrColumns();                        //calcule le nbr de colonnes necessaire pour afficher en format A4
         grid.setNumColumns(nbrColumns);         //paramètre le nbr de colonnes
-        ImageAdapter adapter = new ImageAdapter(getContext(), firstNames, lastNames, imageIds, sourcesFiles, nbrColumns, nbrItems, currentSizeImage, padding, viewPager, oldPositionViewPager);
+        ImageAdapter adapter = new ImageAdapter(getContext(), firstNames, lastNames, imageIds, sourcesFiles, nbrColumns, nbrItems, currentSizeImage, padding, viewPager, oldPositionViewPager, textSize, textBold, textItalic);
         grid.setAdapter(adapter);
     }
 
@@ -208,7 +210,7 @@ public class MosaicFragment extends Fragment {
     }
 
     private void setName(){
-        Intent intent = new Intent(getActivity(), DialogEditText.class);
+        Intent intent = new Intent(getActivity(), IdentityDialogEditText.class);
         startActivityForResult(intent, 100);
     }
 
@@ -239,7 +241,7 @@ public class MosaicFragment extends Fragment {
         int freePos = freePositions();
             for (int f = 0; f < freePos; f++) {
                 for (int i = 0; i < nbrItems; i++) {
-                    if (sourcesFiles[i] == null && i < 99) {  //i != 100 evite  d'obtenir un nullpointer
+                    if (sourcesFiles[i] == null && i < 99) {    //i < 99 evite  d'obtenir un nullpointer
                         sourcesFiles[i] = sourcesFiles[i + 1];  //si l'image est null on copie l'image de l'emplacement suivant
                         sourcesFiles[i + 1] = null;             //on supprime l'image de l'emplacement suivant pour ne pas avoir de doublon
                         firstNames[i] = firstNames[i + 1];

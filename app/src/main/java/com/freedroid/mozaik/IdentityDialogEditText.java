@@ -6,11 +6,10 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class DialogEditText extends AppCompatActivity {
+public class IdentityDialogEditText extends AppCompatActivity {
 
     EditText firstName = null;
     EditText lastName = null;
@@ -19,7 +18,7 @@ public class DialogEditText extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.dialog_edit_text);
+        setContentView(R.layout.identity_dialog_edit_text);
         firstName = findViewById(R.id.editTextFirstName);
         lastName = findViewById(R.id.editTextLastName);
         buttonOK = findViewById(R.id.buttonOK);

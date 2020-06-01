@@ -22,16 +22,23 @@
             android:id="@+id/radioNumberItems"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="20dp"
-            android:text="Number of items"
+            android:paddingHorizontal="10dp"
+            android:text="Items"
             android:checked="true"/>
 
         <RadioButton
             android:id="@+id/radioPadding"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="20dp"
+            android:paddingHorizontal="10dp"
             android:text="Padding" />
+
+        <RadioButton
+            android:id="@+id/radioTextSize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="10dp"
+            android:text="Text size" />
 
     </RadioGroup>
 

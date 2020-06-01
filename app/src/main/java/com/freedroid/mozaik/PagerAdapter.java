@@ -16,7 +16,7 @@ public class PagerAdapter extends FragmentStateAdapter {
     @NonNull
     public Fragment createFragment(int position) {
         if(position == 0)return(new StructureFragment(mosaicFragment));
-        else if(position == 1)return(new RecyclerViewProfils(mosaicFragment));
+        else if(position == 1)return(new TextsAndBG(mosaicFragment));
         else if(position == 2)return(new FinalizationFragment(mosaicFragment));
         else return new StructureFragment(mosaicFragment);
     }
