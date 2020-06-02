@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
+import android.os.Handler;
 import android.view.View;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -75,17 +76,28 @@ public class IO_BitmapImage {
         return returnedBitmap;
     }
 
-    public static void deletePhotos(Context context, File[] sourcesFiles){
-        int nbrFiles = 0;
-        int delFiles = 0;
-        for (File sourcesFile : sourcesFiles) { //supprimer les fichiers photo enregistrés par l'application
-            if (sourcesFile != null) {
-                nbrFiles++;
-                if (sourcesFile.delete()) delFiles++;
+    public static void deleteCacheFiles(final Context context){
+        final int[] nbrFiles = {0};
+        final int[] delFiles = {0};
+
+        Handler handler = new Handler();
+        handler.post(new Runnable() {
+            public void run() { //suppression du cache
+                try {
+                    File[] files = Objects.requireNonNull(context.getExternalCacheDir()).listFiles();
+                    nbrFiles[0] = files.length;
+
+                    assert files != null;
+                    for (File file : files) {
+
+                        if (file.delete()) delFiles[0]++;
+                    }
+                } catch (Exception e) {}
             }
-        }
-        int dif = nbrFiles - delFiles;
-        if(dif != 0){
+        });
+
+        int dif = nbrFiles[0] - delFiles[0]; //vérification de suppression
+        if(dif != 0){                        //si tout n'est pas supprimé on previent l'utilisateur
             Intent intent = new Intent(context, DialogInfo.class);
             String str = context.getString(R.string.warning) + context.getString(R.string.oneSpace)
                     + dif + context.getString(R.string.oneSpace)

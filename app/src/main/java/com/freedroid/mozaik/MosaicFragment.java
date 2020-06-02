@@ -33,7 +33,6 @@ import static android.app.Activity.RESULT_OK;
 //lors du refit ajuster la seekbar!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //effectuer un refit si il n'a pas été fait lors du finish
 //trouver un logo pour l'application
-//effacer les photos lorsque l'on quitte l'application sans avoir appuyé sur finish
 //proposer les coins des images arrondis
 
 public class MosaicFragment extends Fragment {
@@ -61,6 +60,9 @@ public class MosaicFragment extends Fragment {
 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        IO_BitmapImage.deleteCacheFiles(getContext());  //on vide le cache de l'application pour avoir assez de place pour travailler
+
         windowSize = new Point();
         textSize = 30;
         colorText = Color.BLACK;
@@ -248,21 +250,4 @@ public class MosaicFragment extends Fragment {
         nbrItems -= freePos;
         setColumnsAndAdapter();
     }
-/*                                  GERER COMMENT SUPPRIMER LES IMAGES EN FIN D UTILISATION  essayer de supprimer tout le cache après avoir extrait l'image au format A4
-    public void onStart() {
-        super.onStart();
-        //récupérer les fichiers d'origine, pas sourcesFiles et recréer la liste source
-        //il faudra créer originSourcesFiles!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-    }
-
-    public void onStop() {
-        super.onStop();
-        Handler handler = new Handler();
-        handler.post(new Runnable() {
-            public void run() {
-                IO_BitmapImage.deletePhotos(getActivity(), sourcesFiles);   //suppression des images temporaires
-            }
-        });
-    }*/
 }
