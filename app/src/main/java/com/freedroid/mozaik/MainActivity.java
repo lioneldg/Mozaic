@@ -4,34 +4,31 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.widget.Toast;
+import android.os.Handler;
 
 public class MainActivity extends AppCompatActivity {
 
-    FragmentManager fm = null;
-    FragmentTransaction ft = null;
-    MosaicFragment mosaicFragment = null;
+    MosaicFragment mosaicFragment;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //si la mémoire est inaccessible on prévient l'utilisateur et en ferme l'application dans onActivityResult
+
+        //si la mémoire est inaccessible on prévient l'utilisateur et on ferme l'application dans onActivityResult
         if(!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) || Environment.MEDIA_MOUNTED_READ_ONLY.equals(Environment.getExternalStorageState()) ){
             Intent intent = new Intent(MainActivity.this, DialogInfo.class);
-            String str = "La mémoire est inaccessible!\nEssayez de redémarrer l'application ou d'insérer une carte SD";
+            String str = "Memory is inaccessible!\nTry restarting the application or inserting an SD card";
             intent.putExtra("text",str);
             intent.putExtra("needResult", true);
             startActivityForResult(intent, 864);
         }
 
         mosaicFragment = new MosaicFragment();
-        fm = getSupportFragmentManager();
-        ft = fm.beginTransaction();
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
         ft.add(R.id.main, mosaicFragment,"tagMosaicFragment");
         ft.show(mosaicFragment);
         ft.commit();

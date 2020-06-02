@@ -9,14 +9,12 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.Spinner;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class TextsAndBG extends Fragment {
 
@@ -42,19 +40,19 @@ public class TextsAndBG extends Fragment {
         checkBoxItalic = view.findViewById(R.id.checkBoxItalic);
 
         List<String> colors = new ArrayList<>();
-        colors.add("WHITE");
-        colors.add("BLACK");
-        colors.add("BLUE");
-        colors.add("CYAN");
-        colors.add("DKGRAY");
-        colors.add("GRAY");
-        colors.add("LTGRAY");
-        colors.add("GREEN");
-        colors.add("RED");
-        colors.add("MAGENTA");
-        colors.add("YELLOW");
+        colors.add(getString(R.string.WHITE));
+        colors.add(getString(R.string.BLACK));
+        colors.add(getString(R.string.BLUE));
+        colors.add(getString(R.string.CYAN));
+        colors.add(getString(R.string.DARK_GRAY));
+        colors.add(getString(R.string.GRAY));
+        colors.add(getString(R.string.LIGHT_GRAY));
+        colors.add(getString(R.string.GREEN));
+        colors.add(getString(R.string.RED));
+        colors.add(getString(R.string.MAGENTA));
+        colors.add(getString(R.string.YELLOW));
 
-        ArrayAdapter<String> colorArrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, colors);
+        ArrayAdapter<String> colorArrayAdapter = new ArrayAdapter<>(Objects.requireNonNull(getActivity()), android.R.layout.simple_spinner_item, colors);
         colorArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerColorText.setAdapter(colorArrayAdapter);
         spinnerColorBG.setAdapter(colorArrayAdapter);
@@ -94,11 +92,8 @@ public class TextsAndBG extends Fragment {
     }
 
     private void checkVerif(){
-        if(checkBoxBold.isChecked()) mosaicFragment.textBold = true;
-        else mosaicFragment.textBold = false;
-        if(checkBoxItalic.isChecked()) mosaicFragment.textItalic = true;
-        else mosaicFragment.textItalic = false;
-
+        mosaicFragment.textBold = checkBoxBold.isChecked();
+        mosaicFragment.textItalic = checkBoxItalic.isChecked();
         mosaicFragment.setColumnsAndAdapter();
     }
 

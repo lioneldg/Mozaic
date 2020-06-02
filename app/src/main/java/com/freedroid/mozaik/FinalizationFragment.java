@@ -3,23 +3,20 @@ package com.freedroid.mozaik;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Environment;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import java.io.File;
-import java.io.IOException;
 import static android.app.Activity.RESULT_OK;
 
 public class FinalizationFragment extends Fragment {
-    private MosaicFragment mosaicFragment;
 
+    private MosaicFragment mosaicFragment;
 
     public FinalizationFragment(MosaicFragment mosaicFragment) {
         this.mosaicFragment = mosaicFragment;
@@ -55,15 +52,14 @@ public class FinalizationFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == 582 && resultCode == RESULT_OK) {
+            assert data != null;
             String fileName = data.getStringExtra("fileName");
             Bitmap bitmap = IO_BitmapImage.getBitmapFromView(mosaicFragment.grid);
+            String text = getString(R.string.document_saved_in_pictures_folder);
 
-            try {
-                IO_BitmapImage.saveImage(getContext(), bitmap, fileName + ".JPEG", true);     //enregistrement de l'image finale au format A4
-            } catch (IOException e) { e.printStackTrace(); }
-            Toast.makeText(getActivity(), "Document saved in Pictures folder!", Toast.LENGTH_LONG).show();
+            IO_BitmapImage.saveImage(getContext(), bitmap, fileName + ".jpg", true);     //enregistrement de l'image finale au format A4
 
-            IO_BitmapImage.deletePhotos(getActivity(), mosaicFragment.sourcesFiles);   //suppression des images temporaires
+            Toast.makeText(getActivity(), text, Toast.LENGTH_LONG).show();
         }
     }
 }

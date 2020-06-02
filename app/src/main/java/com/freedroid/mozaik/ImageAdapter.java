@@ -1,15 +1,11 @@
 package com.freedroid.mozaik;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
-import android.graphics.fonts.Font;
-import android.graphics.fonts.Font.Builder;
-import android.graphics.fonts.FontFamily;
 import android.os.Handler;
-import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +15,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import androidx.viewpager2.widget.ViewPager2;
 import java.io.File;
 
 public class ImageAdapter extends BaseAdapter {
@@ -34,13 +29,12 @@ public class ImageAdapter extends BaseAdapter {
     private int nbrItems;
     private int maxSizeImage;
     private int padding;
-    private ViewPager2 viewPager;
     private int positionViewPager;
     private boolean textBold;
     private Boolean textItalic;
     private int colorText;
 
-    ImageAdapter(Context c, String[] firstName, String[] lastName, int[] imageId, File imageFiles[], int nbrColumns, int nbrItems, int maxSizeImage, int padding, ViewPager2 viewPager, int positionViewPager, float textSize, boolean textBold, boolean textItalic, int colorText) {
+    ImageAdapter(Context c, String[] firstName, String[] lastName, int[] imageId, File[] imageFiles, int nbrColumns, int nbrItems, int maxSizeImage, int padding, int positionViewPager, float textSize, boolean textBold, boolean textItalic, int colorText) {
         mContext = c;
         this.imageId = imageId;
         this.imageFiles = imageFiles;
@@ -51,7 +45,6 @@ public class ImageAdapter extends BaseAdapter {
         this.nbrItems = nbrItems;
         this.maxSizeImage = maxSizeImage;
         this.padding = padding;
-        this.viewPager = viewPager;
         this.positionViewPager = positionViewPager; //récupère oldPositionViewpager pour connaitre la position du viewPager sans le décalage causé par le filtre posé dans mozaicFragment pour éviter les répétitons de code du lister de ViewPager
         this.textBold = textBold;
         this.textItalic = textItalic;
@@ -70,6 +63,7 @@ public class ImageAdapter extends BaseAdapter {
         return 0;
     }
 
+    @SuppressLint("InflateParams")
     public View getView(final int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View gridView;
@@ -84,7 +78,6 @@ public class ImageAdapter extends BaseAdapter {
         float a4Height = (a4Width*1.414f);
 
         if (convertView == null) {
-            gridView = new View(mContext);
             assert inflater != null;
             gridView = inflater.inflate(R.layout.cell_layout, null);    //ne sait pas comment accéder au ViewGroup à la place de null
 
@@ -106,7 +99,7 @@ public class ImageAdapter extends BaseAdapter {
                 textViewFirstName.setTypeface(textViewFirstName.getTypeface(), Typeface.ITALIC);
                 textViewLastName.setTypeface(textViewLastName.getTypeface(), Typeface.ITALIC);
             }
-            else if(textBold && textItalic){
+            else if(textBold){  //représente textBold && textItalique car les autres possibilités ont été utilisées au dessus
                 textViewFirstName.setTypeface(textViewFirstName.getTypeface(), Typeface.BOLD_ITALIC);
                 textViewLastName.setTypeface(textViewLastName.getTypeface(), Typeface.BOLD_ITALIC);
             }
@@ -118,7 +111,7 @@ public class ImageAdapter extends BaseAdapter {
             gridView.setPaddingRelative(padding,padding,padding,padding);
 
             final ImageView imageView = gridView.findViewById(R.id.grid_item_image);
-            imageView.setLayoutParams(new LinearLayout.LayoutParams((int)a4Width - padding*2, (int)(a4Height - padding*2 - textSize * 9)));//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            imageView.setLayoutParams(new LinearLayout.LayoutParams((int)a4Width - padding*2, (int)(a4Height - padding*2 - textSize * 9)));
 
             Handler handlerRead = new Handler();
             if ((imageFiles[position] != null) && positionViewPager != 0 && positionViewPager != 1) {            //utilisé lors de l'initialisation et du changement de configuration
@@ -130,7 +123,6 @@ public class ImageAdapter extends BaseAdapter {
                     }
                 };
                 handlerRead.post(runnableRead);
-                Log.d("DEBUG","current item = "+positionViewPager);
             } else {
                 Runnable runnableRead = new Runnable() {
                     public void run() {

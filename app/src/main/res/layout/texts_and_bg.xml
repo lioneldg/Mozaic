@@ -21,14 +21,14 @@
             android:id="@+id/checkBoxBold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Bold"/>
+            android:text="@string/bold"/>
 
         <CheckBox
             android:id="@+id/checkBoxItalic"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:text="Italic"/>
+            android:text="@string/italic"/>
    </LinearLayout>
 
     <LinearLayout
@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/textViewTextColor"
             android:layout_marginStart="10dp"
-            android:text="Text color: "/>
+            android:text="@string/text_color"/>
 
         <Spinner
             android:id="@+id/spinnerColorText"
@@ -58,7 +58,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/textViewBGColor"
             android:layout_marginStart="10dp"
-            android:text="BackGround color: "/>
+            android:text="@string/background_color"/>
 
 
         <Spinner

@@ -24,6 +24,7 @@ public class IO_BitmapImage {
             source = new File(Objects.requireNonNull(context).getExternalCacheDir(), name);
         }
 
+        assert source != null;
         return getResizedBitmap(BitmapFactory.decodeFile(source.getPath()), maxSize);//affiche une image compressée pour ne pas trop charger l'application. Cette image est extraite avec BitmapFactory.decodeFile(
     }
 
@@ -46,7 +47,7 @@ public class IO_BitmapImage {
         return Bitmap.createScaledBitmap(image, width, height, true);
     }
 
-    public static File saveImage (Context context, Bitmap bitmapSource, String name, boolean a4) throws IOException {
+    public static File saveImage (Context context, Bitmap bitmapSource, String name, boolean a4){
         File dest = null;
         if(Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())){
             if(!a4)dest = new File(Objects.requireNonNull(context).getExternalCacheDir(), name);
@@ -77,17 +78,21 @@ public class IO_BitmapImage {
     public static void deletePhotos(Context context, File[] sourcesFiles){
         int nbrFiles = 0;
         int delFiles = 0;
-        for(int i = 0; i < sourcesFiles.length; i++){ //supprimer les fichiers photo enregistrés par l'application
-            if(sourcesFiles[i] != null){
+        for (File sourcesFile : sourcesFiles) { //supprimer les fichiers photo enregistrés par l'application
+            if (sourcesFile != null) {
                 nbrFiles++;
-                if(sourcesFiles[i].delete()) delFiles++;
+                if (sourcesFile.delete()) delFiles++;
             }
         }
         int dif = nbrFiles - delFiles;
         if(dif != 0){
             Intent intent = new Intent(context, DialogInfo.class);
-            String str = "Attention "+dif+" fichiers temporaires n'ont pas été supprimés\nVous pouvez le faire manuellement dans le dossier de cache de l'application:\nAndroid/data/com.freedroid.mozaik/cache";
-            intent.putExtra("text", str);
+            String str = context.getString(R.string.warning) + context.getString(R.string.oneSpace)
+                    + dif + context.getString(R.string.oneSpace)
+                    + context.getString(R.string.temporary_files_have_not_been_deleted)
+                    + context.getString(R.string.next_line)
+                    + context.getString(R.string.you_can_do_it_manually_in_the_application_cache_folder)
+                    + context.getString(R.string.oneSpace) + context.getString(R.string.android_data_com_freedroid_mozaik_cache);            intent.putExtra("text", str);
             intent.putExtra("needResult", false);
             context.startActivity(intent);
         }

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="please_type_a_file_name">Veuillez saisir un nom de fichier.</string>
+    <string name="document_saved_in_pictures_folder">Enregistré dans le dossier Pictures</string>
+    <string name="warning">Attention</string>
+    <string name="temporary_files_have_not_been_deleted">fichier(s) temporaire(s) non supprimé(s).</string>
+    <string name="you_can_do_it_manually_in_the_application_cache_folder">Vous pouvez le faire manuellement dans le fichier cache de l\'application:</string>
+    <string name="first_name">Prénom</string>
+    <string name="last_name">Nom</string>
+    <string name="WHITE">BLANC</string>
+    <string name="BLACK">NOIR</string>
+    <string name="BLUE">BLEU</string>
+    <string name="CYAN">CYAN</string>
+    <string name="DARK_GRAY">GRIS FONCÉ</string>
+    <string name="GRAY">GRIS</string>
+    <string name="LIGHT_GRAY">GRIS CLAIR</string>
+    <string name="GREEN">VERT</string>
+    <string name="RED">ROUGE</string>
+    <string name="MAGENTA">MAGENTA</string>
+    <string name="YELLOW">JAUNE</string>
+    <string name="bold">Gras</string>
+    <string name="italic">Italique</string>
+    <string name="text_color">Couleur de texte:</string>
+    <string name="background_color">Couleur de fond:</string>
+    <string name="info">Info</string>
+    <string name="ok">OK</string>
+    <string name="picture_choosed_by_user">Image choisie par l\'utilisateur</string>
+    <string name="file_name">nom du fichier</string>
+    <string name="send">LANCER</string>
+    <string name="refit">Ajuster</string>
+    <string name="finish">Enregistrer</string>
+    <string name="items">Items</string>
+    <string name="padding">Marges</string>
+    <string name="text_size">Taille de texte</string>
+</resources>

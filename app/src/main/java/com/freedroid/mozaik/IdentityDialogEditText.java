@@ -11,17 +11,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class IdentityDialogEditText extends AppCompatActivity {
 
-    EditText firstName = null;
-    EditText lastName = null;
-    Button buttonOK = null;
-
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.identity_dialog_edit_text);
-        firstName = findViewById(R.id.editTextFirstName);
-        lastName = findViewById(R.id.editTextLastName);
-        buttonOK = findViewById(R.id.buttonOK);
+
+        final EditText firstName = findViewById(R.id.editTextFirstName);
+        final EditText lastName = findViewById(R.id.editTextLastName);
+        Button buttonOK = findViewById(R.id.buttonOK);
 
         buttonOK.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {

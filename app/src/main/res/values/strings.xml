@@ -1,12 +1,43 @@
 <resources>
-    <string name="app_name">Mozaik</string>
-    <string name="title_activity_dialog_info">DialogInfo</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
+    <string name="app_name" translatable="false">Mozaik</string>
+    <string name="title_activity_dialog_info" translatable="false">DialogInfo</string>
+    <string name="document_saved_in_pictures_folder">Saved in Pictures folder!</string>
+    <string name="warning">Warning</string>
+    <string name="oneSpace" translatable="false">" "</string>
+    <string name="temporary_files_have_not_been_deleted">temporary files have not been deleted.</string>
+    <string name="first_name">First name</string>
+    <string name="last_name">Last name</string>
+    <string name="WHITE">WHITE</string>
+    <string name="BLACK">BLACK</string>
+    <string name="BLUE">BLUE</string>
+    <string name="CYAN">CYAN</string>
+    <string name="DARK_GRAY">DARK GRAY</string>
+    <string name="GRAY">GRAY</string>
+    <string name="LIGHT_GRAY">LIGHT GRAY</string>
+    <string name="GREEN">GREEN</string>
+    <string name="RED">RED</string>
+    <string name="MAGENTA">MAGENTA</string>
+    <string name="YELLOW">YELLOW</string>
+    <string name="please_type_a_file_name">Please, type a file name.</string>
+    <string name="android_data_com.freedroid.mozaik_cache" translatable="false">Android/data/com.freedroid.mozaik/cache</string>
+    <string name="you_can_do_it_manually_in_the_application_cache_folder">You can do it manually in the application cache folder:</string>
+    <string name="next_line" translatable="false">\n</string>
+    <string name="bold">Bold</string>
+    <string name="italic">Italic</string>
+    <string name="text_color">Text color:</string>
+    <string name="background_color">BackGround color:</string>
+    <string name="info">Info</string>
+    <string name="ok">OK</string>
+    <string name="picture_choosed_by_user">Picture choosed by user</string>
+    <string name="file_name">File name</string>
+    <string name="send">SEND</string>
+    <string name="refit">Refit</string>
+    <string name="finish">Save</string>
+    <string name="items">Items</string>
+    <string name="padding">Padding</string>
+    <string name="text_size">Text size</string>
+    <string name="more" translatable="false">+</string>
+    <string name="less" translatable="false">-</string>
 
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+
 </resources>

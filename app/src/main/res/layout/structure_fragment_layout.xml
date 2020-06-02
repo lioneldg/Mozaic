@@ -23,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingHorizontal="10dp"
-            android:text="Items"
+            android:text="@string/items"
             android:checked="true"/>
 
         <RadioButton
@@ -31,14 +31,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingHorizontal="10dp"
-            android:text="Padding" />
+            android:text="@string/padding" />
 
         <RadioButton
             android:id="@+id/radioTextSize"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingHorizontal="10dp"
-            android:text="Text size" />
+            android:text="@string/text_size" />
 
     </RadioGroup>
 
@@ -70,7 +70,7 @@
         android:id="@+id/buttonMore"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:text="+"
+        android:text="@string/more"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -81,7 +81,7 @@
         android:id="@+id/buttonLess"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:text="-"
+        android:text="@string/less"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/seekBar"
         app:layout_constraintHorizontal_bias="0.0"
