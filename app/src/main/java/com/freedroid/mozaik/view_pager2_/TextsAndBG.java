@@ -18,7 +18,6 @@ import com.freedroid.mozaik.R;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class TextsAndBG extends Fragment {
 
@@ -55,7 +54,7 @@ public class TextsAndBG extends Fragment {
         colors.add(getString(R.string.MAGENTA));
         colors.add(getString(R.string.YELLOW));
 
-        ArrayAdapter<String> colorArrayAdapter = new ArrayAdapter<>(Objects.requireNonNull(getActivity()), android.R.layout.simple_spinner_item, colors);
+        ArrayAdapter<String> colorArrayAdapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_spinner_item, colors);
         colorArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerColorText.setAdapter(colorArrayAdapter);
         spinnerColorBG.setAdapter(colorArrayAdapter);

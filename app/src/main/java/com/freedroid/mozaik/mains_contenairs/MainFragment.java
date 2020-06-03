@@ -16,24 +16,24 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
-
 import com.freedroid.mozaik.R;
 import com.freedroid.mozaik.adapters_.ImageAdapter;
 import com.freedroid.mozaik.adapters_.PagerAdapter;
 import com.freedroid.mozaik.dialogs_.IdentityDialogEditText;
 import com.freedroid.mozaik.tools.IO_BitmapImage;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Objects;
+
 import static android.app.Activity.RESULT_OK;
 
 public class MainFragment extends Fragment {
@@ -109,34 +109,40 @@ public class MainFragment extends Fragment {
             }
         });
 
-        onPageChangeCallback = new ViewPager2.OnPageChangeCallback() {      //listener de viewPager pour bloquer/donner l'acces au GridView en fonction des outils affichés
+        onPageChangeCallback = getOnPageChangeCallback();                   //création du listener du ViewPager2
+
+        return view;
+    }
+
+    public ViewPager2.OnPageChangeCallback getOnPageChangeCallback() {      //création du listener du ViewPager2
+        return new ViewPager2.OnPageChangeCallback() {      //listener de viewPager pour bloquer/donner l'acces au GridView en fonction des outils affichés
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {  //listener du ViewPager2
                 super.onPageScrolled(position, positionOffset, positionOffsetPixels);
                 switch (position){
                     case 0:                                     //première vue
                         if(oldPositionViewPager != position) {
-                            Objects.requireNonNull(getActivity()).setTitle(getString(R.string.layout_1_2));
+                            requireActivity().setTitle(getString(R.string.layout_1_2));
                             oldPositionViewPager = position;    //permet de n'effectuer le code qu'une seule fois par page
                             grid.setEnabled(false);             //interdit de sélectionner des photos
                             break;
                         }
                     case 1:
                         if(oldPositionViewPager != position && oldPositionViewPager == 2) {
-                            Objects.requireNonNull(getActivity()).setTitle(getString(R.string.layout_2_2));
+                            requireActivity().setTitle(getString(R.string.layout_2_2));
                             oldPositionViewPager = position;    //permet de n'effectuer le code qu'une seule fois par page
                             grid.setEnabled(false);             //deuxieme vue
                             setColumnsAndAdapter();             //le but ici est de choisir sa mise en page
                             break;
                         }
                         else if(oldPositionViewPager != position){
-                            Objects.requireNonNull(getActivity()).setTitle(getString(R.string.layout_2_2));
+                            requireActivity().setTitle(getString(R.string.layout_2_2));
                             oldPositionViewPager = position;    //permet de n'effectuer le code qu'une seule fois par page
                             grid.setEnabled(false);             //deuxieme vue
                             break;
                         }
                     case 2:
                         if(oldPositionViewPager != position) {
-                            Objects.requireNonNull(getActivity()).setTitle(getString(R.string.finalization));
+                            requireActivity().setTitle(getString(R.string.finalization));
                             oldPositionViewPager = position;    //permet de n'effectuer le code qu'une seule fois par page
                             grid.setEnabled(true);              //troisième vue,  c'est dans cette vue qu'on choisis les photos à afficher
                             setColumnsAndAdapter();             //et qu'on extrait une image format A4
@@ -144,17 +150,14 @@ public class MainFragment extends Fragment {
                 }
             }
         };
-
-        return view;
     }
 
-    public void onStart() { //enregistrement du listener du ViewPager2
-        super.onStart();
+    public void onResume() {    //enregistrement du listener du ViewPager2
+        super.onResume();
         viewPager.registerOnPageChangeCallback(onPageChangeCallback);
-
     }
 
-    public void onPause() { //désenregistrement du listener du ViewPager2
+    public void onPause() {     //désenregistrement du listener du ViewPager2
         super.onPause();
         viewPager.unregisterOnPageChangeCallback(onPageChangeCallback);
     }
@@ -165,7 +168,7 @@ public class MainFragment extends Fragment {
             Uri selectedFile = data.getData();                  //data.getData retourne l'uri de l'image choisie par l'utilisateur
             Bitmap bitmapSelectedFile = null;
             try {
-                bitmapSelectedFile = MediaStore.Images.Media.getBitmap(Objects.requireNonNull(getActivity()).getContentResolver(), selectedFile);   //récupération de l'image et convertion en bitmap
+                bitmapSelectedFile = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), selectedFile);   //récupération de l'image et convertion en bitmap
             } catch (IOException e) { e.printStackTrace(); }
 
             //enregistrement et lecture image
@@ -198,7 +201,7 @@ public class MainFragment extends Fragment {
     }
 
     private void setWindowSize(){
-        Display display = Objects.requireNonNull(getActivity()).getWindowManager().getDefaultDisplay();
+        Display display = requireActivity().getWindowManager().getDefaultDisplay();
         display.getSize(windowSize);
     }
 
@@ -259,9 +262,9 @@ public class MainFragment extends Fragment {
                         sourcesFiles[i] = sourcesFiles[i + 1];  //si l'image est null on copie l'image de l'emplacement suivant
                         sourcesFiles[i + 1] = null;             //on supprime l'image de l'emplacement suivant pour ne pas avoir de doublon
                         firstNames[i] = firstNames[i + 1];
-                        firstNames[i + 1] = Objects.requireNonNull(getContext()).getString(R.string.first_name);
+                        firstNames[i + 1] = requireContext().getString(R.string.first_name);
                         lastNames[i] = lastNames[i + 1];
-                        lastNames[i + 1] = getContext().getString(R.string.last_name);
+                        lastNames[i + 1] = requireContext().getString(R.string.last_name);
                     }
                 }
             }
