@@ -1,4 +1,4 @@
-package com.freedroid.mozaik;
+package com.freedroid.mozaik.view_pager2_;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -12,13 +12,17 @@ import android.widget.Spinner;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import com.freedroid.mozaik.mains_contenairs.MainFragment;
+import com.freedroid.mozaik.R;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class TextsAndBG extends Fragment {
 
-    MainFragment mainFragment;
+    final MainFragment mainFragment;
 
     public TextsAndBG(MainFragment mainFragment) {
         this.mainFragment = mainFragment;
@@ -72,7 +76,7 @@ public class TextsAndBG extends Fragment {
 
         spinnerColorText.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mainFragment.colorText = getColor(position);
+                mainFragment.setColorText(getColor(position));
                 mainFragment.setColumnsAndAdapter();
             }
 
@@ -81,7 +85,7 @@ public class TextsAndBG extends Fragment {
 
         spinnerColorBG.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mainFragment.grid.setBackgroundColor(getColor(position));
+                mainFragment.getGrid().setBackgroundColor(getColor(position));
             }
 
             public void onNothingSelected(AdapterView<?> parent) { }
@@ -91,8 +95,8 @@ public class TextsAndBG extends Fragment {
     }
 
     private void checkVerif(){
-        mainFragment.textBold = checkBoxBold.isChecked();
-        mainFragment.textItalic = checkBoxItalic.isChecked();
+        mainFragment.setTextBold(checkBoxBold.isChecked());
+        mainFragment.setTextItalic(checkBoxItalic.isChecked());
         mainFragment.setColumnsAndAdapter();
     }
 

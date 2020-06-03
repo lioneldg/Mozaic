@@ -1,12 +1,17 @@
-package com.freedroid.mozaik;
+package com.freedroid.mozaik.adapters_;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import com.freedroid.mozaik.mains_contenairs.MainFragment;
+import com.freedroid.mozaik.view_pager2_.FinalizationFragment;
+import com.freedroid.mozaik.view_pager2_.StructureFragment;
+import com.freedroid.mozaik.view_pager2_.TextsAndBG;
+
 public class PagerAdapter extends FragmentStateAdapter {
 
-    private MainFragment mainFragment;
+    private final MainFragment mainFragment;
 
     public PagerAdapter(@NonNull Fragment fragment) {
         super(fragment);

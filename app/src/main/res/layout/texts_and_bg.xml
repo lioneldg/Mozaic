@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -9,7 +7,8 @@
     android:layout_gravity="center"
     android:layout_marginStart="10dp"
     android:layout_marginEnd="10dp"
-    android:background="@color/colorPrimary">
+    android:background="@color/colorPrimary"
+    tools:ignore="Overdraw">
 
    <LinearLayout
        android:layout_width="match_parent"
@@ -38,7 +37,6 @@
         <TextView
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:id="@+id/textViewTextColor"
             android:layout_marginStart="10dp"
             android:text="@string/text_color"/>
 
@@ -56,7 +54,6 @@
         <TextView
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:id="@+id/textViewBGColor"
             android:layout_marginStart="10dp"
             android:text="@string/background_color"/>
 

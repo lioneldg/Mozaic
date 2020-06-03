@@ -1,4 +1,4 @@
-package com.freedroid.mozaik;
+package com.freedroid.mozaik.mains_contenairs;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -22,6 +22,13 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
+
+import com.freedroid.mozaik.R;
+import com.freedroid.mozaik.adapters_.ImageAdapter;
+import com.freedroid.mozaik.adapters_.PagerAdapter;
+import com.freedroid.mozaik.dialogs_.IdentityDialogEditText;
+import com.freedroid.mozaik.tools.IO_BitmapImage;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
@@ -31,26 +38,26 @@ import static android.app.Activity.RESULT_OK;
 
 public class MainFragment extends Fragment {
 
-    protected int nbrItems = 0;
-    protected int nbrColumns = 0;
-    protected String[] firstNames = null;
-    protected String[] lastNames = null;
-    protected int[] imageIds = null;
-    protected File[] sourcesFiles = null;
+    private int nbrItems = 0;
+    private int nbrColumns = 0;
+    private String[] firstNames = null;
+    private String[] lastNames = null;
+    private int[] imageIds = null;
+    private File[] sourcesFiles = null;
     private TextView currentFirstName = null;
     private TextView currentLastName = null;
-    protected GridView grid = null;
+    private GridView grid = null;
     private int currentSelection = -1;
     private Date currentImageName = null;
-    protected int currentSizeImage = 0;
+    private int currentSizeImage = 0;
     private int sizeImageFull = 0;
-    protected int padding = 0;
-    Point windowSize = null;
-    protected int oldPositionViewPager = -1;
-    protected float textSize = 0;
-    protected boolean textBold = false;
-    protected boolean textItalic = false;
-    protected int colorText = 0;
+    private int padding = 0;
+    private Point windowSize = null;
+    private int oldPositionViewPager = -1;
+    private float textSize = 0;
+    private boolean textBold = false;
+    private boolean textItalic = false;
+    private int colorText = 0;
     private ViewPager2 viewPager;
     private ViewPager2.OnPageChangeCallback onPageChangeCallback;
 
@@ -195,7 +202,7 @@ public class MainFragment extends Fragment {
         display.getSize(windowSize);
     }
 
-    protected void setColumnsAndAdapter(){
+    public void setColumnsAndAdapter(){
         setNbrColumns();                        //calcule le nbr de colonnes necessaire pour afficher en format A4
         grid.setNumColumns(nbrColumns);         //paramètre le nbr de colonnes
         ImageAdapter adapter = new ImageAdapter(getContext(),this);
@@ -244,7 +251,7 @@ public class MainFragment extends Fragment {
         return free;
     }
 
-    protected void refit(){
+    public void refit(){
         int freePos = freePositions();
             for (int f = 0; f < freePos; f++) {
                 for (int i = 0; i < nbrItems; i++) {
@@ -261,4 +268,85 @@ public class MainFragment extends Fragment {
         nbrItems -= freePos;
         setColumnsAndAdapter();
     }
+
+    public int getNbrItems() {
+        return nbrItems;
+    }
+
+    public void setNbrItems(int nbrItems) {
+        this.nbrItems = nbrItems;
+    }
+
+    public int getNbrColumns() {
+        return nbrColumns;
+    }
+
+    public String[] getFirstNames() {
+        return firstNames;
+    }
+
+    public String[] getLastNames() {
+        return lastNames;
+    }
+
+    public int[] getImageIds() {
+        return imageIds;
+    }
+
+    public File[] getSourcesFiles() {
+        return sourcesFiles;
+    }
+
+    public GridView getGrid() {
+        return grid;
+    }
+
+    public int getCurrentSizeImage() {
+        return currentSizeImage;
+    }
+
+    public int getPadding() {
+        return padding;
+    }
+
+    public void setPadding(int padding) {
+        this.padding = padding;
+    }
+
+    public int getOldPositionViewPager() {
+        return oldPositionViewPager;
+    }
+
+    public float getTextSize() {
+        return textSize;
+    }
+
+    public void setTextSize(float textSize) {
+        this.textSize = textSize;
+    }
+
+    public boolean isTextBold() {
+        return textBold;
+    }
+
+    public void setTextBold(boolean textBold) {
+        this.textBold = textBold;
+    }
+
+    public boolean isTextItalic() {
+        return textItalic;
+    }
+
+    public void setTextItalic(boolean textItalic) {
+        this.textItalic = textItalic;
+    }
+
+    public int getColorText() {
+        return colorText;
+    }
+
+    public void setColorText(int colorText) {
+        this.colorText = colorText;
+    }
+
 }

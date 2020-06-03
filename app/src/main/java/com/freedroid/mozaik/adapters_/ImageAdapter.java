@@ -1,4 +1,4 @@
-package com.freedroid.mozaik;
+package com.freedroid.mozaik.adapters_;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -16,21 +16,25 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.freedroid.mozaik.mains_contenairs.MainFragment;
+import com.freedroid.mozaik.R;
+import com.freedroid.mozaik.tools.IO_BitmapImage;
+
 public class ImageAdapter extends BaseAdapter {
 
-    private Context mContext;
-    private MainFragment mainFragment;
-    private float textSize;
+    private final Context mContext;
+    private final MainFragment mainFragment;
+    private final float textSize;
 
-    ImageAdapter(Context c, MainFragment mainFragment) {
+    public ImageAdapter(Context c, MainFragment mainFragment) {
 
         mContext = c;
         this.mainFragment = mainFragment;
-        this.textSize = (mainFragment.textSize/(float)mainFragment.nbrColumns) - (mainFragment.padding/20.0f);    //la taille du texte est adaptée au nb de colonnes et au padding
+        this.textSize = (mainFragment.getTextSize()/(float)mainFragment.getNbrColumns()) - (mainFragment.getPadding()/20.0f);    //la taille du texte est adaptée au nb de colonnes et au padding
     }
 
     public int getCount() {
-        return mainFragment.nbrItems;
+        return mainFragment.getNbrItems();
     }
 
     public Object getItem(int position) {
@@ -52,7 +56,7 @@ public class ImageAdapter extends BaseAdapter {
         Point size = new Point();
         display.getSize(size);
 
-        float a4Width = size.x / (float)mainFragment.nbrColumns;
+        float a4Width = size.x / (float)mainFragment.getNbrColumns();
         float a4Height = (a4Width*1.414f);
 
         if (convertView == null) {
@@ -60,24 +64,24 @@ public class ImageAdapter extends BaseAdapter {
             gridView = inflater.inflate(R.layout.cell_layout, null);    //ne sait pas comment accéder au ViewGroup à la place de null
 
             TextView textViewFirstName = gridView.findViewById(R.id.firstName);
-            textViewFirstName.setText(mainFragment.firstNames[position]);
+            textViewFirstName.setText(mainFragment.getFirstNames()[position]);
             textViewFirstName.setTextSize(textSize);
-            textViewFirstName.setTextColor(mainFragment.colorText);
+            textViewFirstName.setTextColor(mainFragment.getColorText());
 
             TextView textViewLastName = gridView.findViewById(R.id.lastName);
-            textViewLastName.setText(mainFragment.lastNames[position]);
+            textViewLastName.setText(mainFragment.getLastNames()[position]);
             textViewLastName.setTextSize(textSize);
-            textViewLastName.setTextColor(mainFragment.colorText);
+            textViewLastName.setTextColor(mainFragment.getColorText());
 
-            if(mainFragment.textBold && !mainFragment.textItalic){
+            if(mainFragment.isTextBold() && !mainFragment.isTextItalic()){
                 textViewFirstName.setTypeface(textViewFirstName.getTypeface(), Typeface.BOLD);
                 textViewLastName.setTypeface(textViewLastName.getTypeface(), Typeface.BOLD);
             }
-            else if(mainFragment.textItalic && !mainFragment.textBold){
+            else if(mainFragment.isTextItalic() && !mainFragment.isTextBold()){
                 textViewFirstName.setTypeface(textViewFirstName.getTypeface(), Typeface.ITALIC);
                 textViewLastName.setTypeface(textViewLastName.getTypeface(), Typeface.ITALIC);
             }
-            else if(mainFragment.textBold){  //représente textBold && textItalique car les autres possibilités ont été utilisées au dessus
+            else if(mainFragment.isTextBold()){  //représente textBold && textItalique car les autres possibilités ont été utilisées au dessus
                 textViewFirstName.setTypeface(textViewFirstName.getTypeface(), Typeface.BOLD_ITALIC);
                 textViewLastName.setTypeface(textViewLastName.getTypeface(), Typeface.BOLD_ITALIC);
             }
@@ -86,17 +90,17 @@ public class ImageAdapter extends BaseAdapter {
                 textViewLastName.setTypeface(textViewLastName.getTypeface(), Typeface.NORMAL);
             }
 
-            gridView.setPaddingRelative(mainFragment.padding, mainFragment.padding, mainFragment.padding, mainFragment.padding);
+            gridView.setPaddingRelative(mainFragment.getPadding(), mainFragment.getPadding(), mainFragment.getPadding(), mainFragment.getPadding());
 
             final ImageView imageView = gridView.findViewById(R.id.grid_item_image);
-            imageView.setLayoutParams(new LinearLayout.LayoutParams((int)a4Width - mainFragment.padding*2, (int)(a4Height - mainFragment.padding*2 - textSize * 9)));
+            imageView.setLayoutParams(new LinearLayout.LayoutParams((int)a4Width - mainFragment.getPadding()*2, (int)(a4Height - mainFragment.getPadding()*2 - textSize * 9)));
 
             Handler handlerRead = new Handler();
-            if ((mainFragment.sourcesFiles[position] != null) && mainFragment.oldPositionViewPager != 0 && mainFragment.oldPositionViewPager != 1) {            //utilisé lors de l'initialisation et du changement de configuration
+            if ((mainFragment.getSourcesFiles()[position] != null) && mainFragment.getOldPositionViewPager() != 0 && mainFragment.getOldPositionViewPager() != 1) {            //utilisé lors de l'initialisation et du changement de configuration
                 final Bitmap[] imageSource = {null};
                 Runnable runnableRead = new Runnable() {
                     public void run() {
-                        imageSource[0] = IO_BitmapImage.readImage(mainFragment.sourcesFiles[position],mainFragment.currentSizeImage);
+                        imageSource[0] = IO_BitmapImage.readImage(mainFragment.getSourcesFiles()[position],mainFragment.getCurrentSizeImage());
                         imageView.setImageBitmap(imageSource[0]);
                     }
                 };
@@ -104,7 +108,7 @@ public class ImageAdapter extends BaseAdapter {
             } else {
                 Runnable runnableRead = new Runnable() {
                     public void run() {
-                        imageView.setImageResource(mainFragment.imageIds[position]);
+                        imageView.setImageResource(mainFragment.getImageIds()[position]);
                     }
                 };
                 handlerRead.post(runnableRead);

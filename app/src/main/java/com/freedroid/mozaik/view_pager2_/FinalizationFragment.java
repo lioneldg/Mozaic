@@ -1,4 +1,4 @@
-package com.freedroid.mozaik;
+package com.freedroid.mozaik.view_pager2_;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -11,11 +11,17 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import com.freedroid.mozaik.mains_contenairs.MainFragment;
+import com.freedroid.mozaik.R;
+import com.freedroid.mozaik.dialogs_.ExportDialogEditText;
+import com.freedroid.mozaik.tools.IO_BitmapImage;
+
 import static android.app.Activity.RESULT_OK;
 
 public class FinalizationFragment extends Fragment {
 
-    private MainFragment mainFragment;
+    private final MainFragment mainFragment;
 
     public FinalizationFragment(MainFragment mainFragment) {
         this.mainFragment = mainFragment;
@@ -53,7 +59,7 @@ public class FinalizationFragment extends Fragment {
         if(requestCode == 582 && resultCode == RESULT_OK) {
             assert data != null;
             String fileName = data.getStringExtra("fileName");
-            Bitmap bitmap = IO_BitmapImage.getBitmapFromView(mainFragment.grid);
+            Bitmap bitmap = IO_BitmapImage.getBitmapFromView(mainFragment.getGrid());
             String text = getString(R.string.document_saved_in_pictures_folder);
 
             IO_BitmapImage.saveImage(getContext(), bitmap, fileName + ".jpg", true);     //enregistrement de l'image finale au format A4

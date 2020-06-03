@@ -1,4 +1,4 @@
-package com.freedroid.mozaik;
+package com.freedroid.mozaik.dialogs_;
 
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.freedroid.mozaik.R;
 
 public class DialogInfo extends AppCompatActivity {
 

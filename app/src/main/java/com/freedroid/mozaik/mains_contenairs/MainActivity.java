@@ -1,4 +1,4 @@
-package com.freedroid.mozaik;
+package com.freedroid.mozaik.mains_contenairs;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -7,6 +7,9 @@ import androidx.fragment.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+
+import com.freedroid.mozaik.R;
+import com.freedroid.mozaik.dialogs_.DialogInfo;
 
 public class MainActivity extends AppCompatActivity {
 
