@@ -12,17 +12,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class ExportDialogEditText extends AppCompatActivity {
 
-    EditText editTextFileName = null;
-    Button buttonSend = null;
-
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.export_dialog_edit_text);
 
         final String text = getString(R.string.please_type_a_file_name);
-        editTextFileName = findViewById(R.id.editTextFileName);
-        buttonSend = findViewById(R.id.buttonSend);
+        final EditText editTextFileName = findViewById(R.id.editTextFileName);
+        Button buttonSend = findViewById(R.id.buttonSend);
 
         buttonSend.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {

@@ -17,8 +17,6 @@ import java.util.Objects;
 
 public class IO_BitmapImage {
 
-
-
     public static Bitmap readImage(Context context, String name, int maxSize) {
         File source = null;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) || Environment.MEDIA_MOUNTED_READ_ONLY.equals(Environment.getExternalStorageState())) {
@@ -85,14 +83,14 @@ public class IO_BitmapImage {
             public void run() { //suppression du cache
                 try {
                     File[] files = Objects.requireNonNull(context.getExternalCacheDir()).listFiles();
+                    assert files != null;
                     nbrFiles[0] = files.length;
 
-                    assert files != null;
                     for (File file : files) {
 
                         if (file.delete()) delFiles[0]++;
                     }
-                } catch (Exception e) {}
+                } catch (Exception e) {e.printStackTrace();}
             }
         });
 

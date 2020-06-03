@@ -14,12 +14,7 @@ import androidx.fragment.app.Fragment;
 
 public class StructureFragment extends Fragment{
 
-    private TextView textViewSeekBar = null;
-    private SeekBar seekBar = null;
     private MainFragment mainFragment;
-    private RadioButton radioNumberItems;
-    private RadioButton radioPadding;
-    private RadioButton radioTextSize;
 
     StructureFragment(MainFragment mainFragment) {
         this.mainFragment = mainFragment;
@@ -33,13 +28,13 @@ public class StructureFragment extends Fragment{
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.structure_fragment_layout, container, false);
-        textViewSeekBar = view.findViewById(R.id.textViewSeekBar);
-        seekBar = view.findViewById(R.id.seekBar);
+        final TextView textViewSeekBar = view.findViewById(R.id.textViewSeekBar);
+        final SeekBar seekBar = view.findViewById(R.id.seekBar);
         Button buttonLess = view.findViewById(R.id.buttonLess);
         Button buttonMore = view.findViewById(R.id.buttonMore);
-        radioNumberItems = view.findViewById(R.id.radioNumberItems);
-        radioPadding = view.findViewById(R.id.radioPadding);
-        radioTextSize = view.findViewById(R.id.radioTextSize);
+        final RadioButton radioNumberItems = view.findViewById(R.id.radioNumberItems);
+        final RadioButton radioPadding = view.findViewById(R.id.radioPadding);
+        final RadioButton radioTextSize = view.findViewById(R.id.radioTextSize);
 
         seekBar.setProgress(mainFragment.nbrItems);
         textViewSeekBar.setText(String.valueOf(mainFragment.nbrItems));

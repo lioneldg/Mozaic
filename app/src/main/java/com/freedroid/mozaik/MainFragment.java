@@ -29,15 +29,13 @@ import java.util.Date;
 import java.util.Objects;
 import static android.app.Activity.RESULT_OK;
 
-//desenregistrer le listener de viewPager lors de la gestion du cycle de vie
-
 public class MainFragment extends Fragment {
 
     protected int nbrItems = 0;
-    private int nbrColumns = 0;
-    private String[] firstNames = null;
-    private String[] lastNames = null;
-    private int[] imageIds = null;
+    protected int nbrColumns = 0;
+    protected String[] firstNames = null;
+    protected String[] lastNames = null;
+    protected int[] imageIds = null;
     protected File[] sourcesFiles = null;
     private TextView currentFirstName = null;
     private TextView currentLastName = null;
@@ -53,6 +51,8 @@ public class MainFragment extends Fragment {
     protected boolean textBold = false;
     protected boolean textItalic = false;
     protected int colorText = 0;
+    private ViewPager2 viewPager;
+    private ViewPager2.OnPageChangeCallback onPageChangeCallback;
 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,7 +83,7 @@ public class MainFragment extends Fragment {
 
         nbrItems = 20;                                      // démarrer l'application à 20 items
 
-        ViewPager2 viewPager = view.findViewById(R.id.viewPager);
+        viewPager = view.findViewById(R.id.viewPager);
         grid = view.findViewById(R.id.PhotoGridView);
         grid.setEnabled(false);
         FragmentStateAdapter adapter=  new PagerAdapter(this);
@@ -102,8 +102,8 @@ public class MainFragment extends Fragment {
             }
         });
 
-        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {      //listener de viewPager pour bloquer/donner l'acces au GridView en fonction des outils affichés
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        onPageChangeCallback = new ViewPager2.OnPageChangeCallback() {      //listener de viewPager pour bloquer/donner l'acces au GridView en fonction des outils affichés
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {  //listener du ViewPager2
                 super.onPageScrolled(position, positionOffset, positionOffsetPixels);
                 switch (position){
                     case 0:                                     //première vue
@@ -136,9 +136,20 @@ public class MainFragment extends Fragment {
                         }
                 }
             }
-        });
+        };
 
         return view;
+    }
+
+    public void onStart() { //enregistrement du listener du ViewPager2
+        super.onStart();
+        viewPager.registerOnPageChangeCallback(onPageChangeCallback);
+
+    }
+
+    public void onPause() { //désenregistrement du listener du ViewPager2
+        super.onPause();
+        viewPager.unregisterOnPageChangeCallback(onPageChangeCallback);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -187,7 +198,7 @@ public class MainFragment extends Fragment {
     protected void setColumnsAndAdapter(){
         setNbrColumns();                        //calcule le nbr de colonnes necessaire pour afficher en format A4
         grid.setNumColumns(nbrColumns);         //paramètre le nbr de colonnes
-        ImageAdapter adapter = new ImageAdapter(getContext(), firstNames, lastNames, imageIds, sourcesFiles, nbrColumns, nbrItems, currentSizeImage, padding, oldPositionViewPager, textSize, textBold, textItalic, colorText);
+        ImageAdapter adapter = new ImageAdapter(getContext(),this);
         grid.setAdapter(adapter);
     }
 

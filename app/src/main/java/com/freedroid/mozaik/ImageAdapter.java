@@ -15,44 +15,22 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import java.io.File;
 
 public class ImageAdapter extends BaseAdapter {
 
     private Context mContext;
-    private int[] imageId;
-    private File[] imageFiles;
-    private String[] firstName;
-    private String[] lastName;
-    private int nbrColumns;
+    private MainFragment mainFragment;
     private float textSize;
-    private int nbrItems;
-    private int maxSizeImage;
-    private int padding;
-    private int positionViewPager;
-    private boolean textBold;
-    private Boolean textItalic;
-    private int colorText;
 
-    ImageAdapter(Context c, String[] firstName, String[] lastName, int[] imageId, File[] imageFiles, int nbrColumns, int nbrItems, int maxSizeImage, int padding, int positionViewPager, float textSize, boolean textBold, boolean textItalic, int colorText) {
+    ImageAdapter(Context c, MainFragment mainFragment) {
+
         mContext = c;
-        this.imageId = imageId;
-        this.imageFiles = imageFiles;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.nbrColumns = nbrColumns;
-        this.textSize = (textSize/(float)nbrColumns) - (padding/20.0f);    //la taille du texte est adaptée au nb de colonnes et au padding
-        this.nbrItems = nbrItems;
-        this.maxSizeImage = maxSizeImage;
-        this.padding = padding;
-        this.positionViewPager = positionViewPager; //récupère oldPositionViewpager pour connaitre la position du viewPager sans le décalage causé par le filtre posé dans mozaicFragment pour éviter les répétitons de code du lister de ViewPager
-        this.textBold = textBold;
-        this.textItalic = textItalic;
-        this.colorText = colorText;
+        this.mainFragment = mainFragment;
+        this.textSize = (mainFragment.textSize/(float)mainFragment.nbrColumns) - (mainFragment.padding/20.0f);    //la taille du texte est adaptée au nb de colonnes et au padding
     }
 
     public int getCount() {
-        return nbrItems;
+        return mainFragment.nbrItems;
     }
 
     public Object getItem(int position) {
@@ -74,7 +52,7 @@ public class ImageAdapter extends BaseAdapter {
         Point size = new Point();
         display.getSize(size);
 
-        float a4Width = size.x / (float)nbrColumns;
+        float a4Width = size.x / (float)mainFragment.nbrColumns;
         float a4Height = (a4Width*1.414f);
 
         if (convertView == null) {
@@ -82,24 +60,24 @@ public class ImageAdapter extends BaseAdapter {
             gridView = inflater.inflate(R.layout.cell_layout, null);    //ne sait pas comment accéder au ViewGroup à la place de null
 
             TextView textViewFirstName = gridView.findViewById(R.id.firstName);
-            textViewFirstName.setText(firstName[position]);
+            textViewFirstName.setText(mainFragment.firstNames[position]);
             textViewFirstName.setTextSize(textSize);
-            textViewFirstName.setTextColor(colorText);
+            textViewFirstName.setTextColor(mainFragment.colorText);
 
             TextView textViewLastName = gridView.findViewById(R.id.lastName);
-            textViewLastName.setText(lastName[position]);
+            textViewLastName.setText(mainFragment.lastNames[position]);
             textViewLastName.setTextSize(textSize);
-            textViewLastName.setTextColor(colorText);
+            textViewLastName.setTextColor(mainFragment.colorText);
 
-            if(textBold && !textItalic){
+            if(mainFragment.textBold && !mainFragment.textItalic){
                 textViewFirstName.setTypeface(textViewFirstName.getTypeface(), Typeface.BOLD);
                 textViewLastName.setTypeface(textViewLastName.getTypeface(), Typeface.BOLD);
             }
-            else if(textItalic && !textBold){
+            else if(mainFragment.textItalic && !mainFragment.textBold){
                 textViewFirstName.setTypeface(textViewFirstName.getTypeface(), Typeface.ITALIC);
                 textViewLastName.setTypeface(textViewLastName.getTypeface(), Typeface.ITALIC);
             }
-            else if(textBold){  //représente textBold && textItalique car les autres possibilités ont été utilisées au dessus
+            else if(mainFragment.textBold){  //représente textBold && textItalique car les autres possibilités ont été utilisées au dessus
                 textViewFirstName.setTypeface(textViewFirstName.getTypeface(), Typeface.BOLD_ITALIC);
                 textViewLastName.setTypeface(textViewLastName.getTypeface(), Typeface.BOLD_ITALIC);
             }
@@ -108,17 +86,17 @@ public class ImageAdapter extends BaseAdapter {
                 textViewLastName.setTypeface(textViewLastName.getTypeface(), Typeface.NORMAL);
             }
 
-            gridView.setPaddingRelative(padding,padding,padding,padding);
+            gridView.setPaddingRelative(mainFragment.padding, mainFragment.padding, mainFragment.padding, mainFragment.padding);
 
             final ImageView imageView = gridView.findViewById(R.id.grid_item_image);
-            imageView.setLayoutParams(new LinearLayout.LayoutParams((int)a4Width - padding*2, (int)(a4Height - padding*2 - textSize * 9)));
+            imageView.setLayoutParams(new LinearLayout.LayoutParams((int)a4Width - mainFragment.padding*2, (int)(a4Height - mainFragment.padding*2 - textSize * 9)));
 
             Handler handlerRead = new Handler();
-            if ((imageFiles[position] != null) && positionViewPager != 0 && positionViewPager != 1) {            //utilisé lors de l'initialisation et du changement de configuration
+            if ((mainFragment.sourcesFiles[position] != null) && mainFragment.oldPositionViewPager != 0 && mainFragment.oldPositionViewPager != 1) {            //utilisé lors de l'initialisation et du changement de configuration
                 final Bitmap[] imageSource = {null};
                 Runnable runnableRead = new Runnable() {
                     public void run() {
-                        imageSource[0] = IO_BitmapImage.readImage(imageFiles[position],maxSizeImage);
+                        imageSource[0] = IO_BitmapImage.readImage(mainFragment.sourcesFiles[position],mainFragment.currentSizeImage);
                         imageView.setImageBitmap(imageSource[0]);
                     }
                 };
@@ -126,7 +104,7 @@ public class ImageAdapter extends BaseAdapter {
             } else {
                 Runnable runnableRead = new Runnable() {
                     public void run() {
-                        imageView.setImageResource(imageId[position]);
+                        imageView.setImageResource(mainFragment.imageIds[position]);
                     }
                 };
                 handlerRead.post(runnableRead);
