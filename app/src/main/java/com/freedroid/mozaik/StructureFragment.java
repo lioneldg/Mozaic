@@ -12,17 +12,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-public class StructureFragment extends Fragment {
+public class StructureFragment extends Fragment{
 
     private TextView textViewSeekBar = null;
     private SeekBar seekBar = null;
-    private MosaicFragment mosaicFragment;
+    private MainFragment mainFragment;
     private RadioButton radioNumberItems;
     private RadioButton radioPadding;
     private RadioButton radioTextSize;
 
-    StructureFragment(MosaicFragment mosaicFragment) {
-        this.mosaicFragment = mosaicFragment;
+    StructureFragment(MainFragment mainFragment) {
+        this.mainFragment = mainFragment;
     }
 
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,22 +41,22 @@ public class StructureFragment extends Fragment {
         radioPadding = view.findViewById(R.id.radioPadding);
         radioTextSize = view.findViewById(R.id.radioTextSize);
 
-        seekBar.setProgress(mosaicFragment.nbrItems);
-        textViewSeekBar.setText(String.valueOf(mosaicFragment.nbrItems));
+        seekBar.setProgress(mainFragment.nbrItems);
+        textViewSeekBar.setText(String.valueOf(mainFragment.nbrItems));
 
 
         buttonMore.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if(seekBar.getProgress() < 100) {
                     if (radioNumberItems.isChecked()) {     //clic sur le bouton + =>un item de plus
-                        mosaicFragment.nbrItems++;
+                        mainFragment.nbrItems++;
                         seekBar.setProgress(seekBar.getProgress() + 1);
-                        mosaicFragment.setColumnsAndAdapter();
+                        mainFragment.setColumnsAndAdapter();
                     }
                     if (radioPadding.isChecked()) {         //clic sur le bouton + => padding plus grand
-                        mosaicFragment.padding++;
+                        mainFragment.padding++;
                         seekBar.setProgress(seekBar.getProgress() + 1);
-                        mosaicFragment.setColumnsAndAdapter();
+                        mainFragment.setColumnsAndAdapter();
                     }
                 }
             }
@@ -66,14 +66,14 @@ public class StructureFragment extends Fragment {
             public void onClick(View v) {
                 if(seekBar.getProgress() > 1) {     //clic sur le bouton - => un item de moins
                     if (radioNumberItems.isChecked()) {
-                        mosaicFragment.nbrItems--;
+                        mainFragment.nbrItems--;
                         seekBar.setProgress(seekBar.getProgress() - 1);
-                        mosaicFragment.setColumnsAndAdapter();
+                        mainFragment.setColumnsAndAdapter();
                     }
                     if (radioPadding.isChecked()) {         //clic sur le bouton - => padding moins grand
-                        mosaicFragment.padding--;
+                        mainFragment.padding--;
                         seekBar.setProgress(seekBar.getProgress() - 1);
-                        mosaicFragment.setColumnsAndAdapter();
+                        mainFragment.setColumnsAndAdapter();
                     }
                 }
             }
@@ -82,18 +82,18 @@ public class StructureFragment extends Fragment {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if(radioNumberItems.isChecked()) {                              //modification du nombre d'item avec la seekBar
-                    mosaicFragment.nbrItems = (progress == 0) ? 1 : progress;   //empecher nbrItems = 0
-                    textViewSeekBar.setText(String.valueOf(mosaicFragment.nbrItems));
+                    mainFragment.nbrItems = (progress == 0) ? 1 : progress;   //empecher nbrItems = 0
+                    textViewSeekBar.setText(String.valueOf(mainFragment.nbrItems));
                 }
                 if(radioPadding.isChecked()) {                                 //modification du padding
-                    mosaicFragment.padding = progress;
-                    textViewSeekBar.setText(String.valueOf(mosaicFragment.padding));
-                    mosaicFragment.setColumnsAndAdapter();                      //modification du padding en temps réel
+                    mainFragment.padding = progress;
+                    textViewSeekBar.setText(String.valueOf(mainFragment.padding));
+                    mainFragment.setColumnsAndAdapter();                      //modification du padding en temps réel
                 }
                 if(radioTextSize.isChecked()){
-                    mosaicFragment.textSize = (float)progress/2;
-                    textViewSeekBar.setText(String.valueOf(mosaicFragment.textSize));
-                    mosaicFragment.setColumnsAndAdapter();                      //modification du textSize en temps réel
+                    mainFragment.textSize = (float)progress/2;
+                    textViewSeekBar.setText(String.valueOf(mainFragment.textSize));
+                    mainFragment.setColumnsAndAdapter();                      //modification du textSize en temps réel
                 }
             }
 
@@ -101,29 +101,29 @@ public class StructureFragment extends Fragment {
 
             public void onStopTrackingTouch(SeekBar seekBar) {
                 if(radioNumberItems.isChecked()) {
-                    mosaicFragment.setColumnsAndAdapter();                      //modification du nbr d'items lors du retrait du doigt
+                    mainFragment.setColumnsAndAdapter();                      //modification du nbr d'items lors du retrait du doigt
                 }
             }
         });
 
         radioNumberItems.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                seekBar.setProgress(mosaicFragment.nbrItems);
-                textViewSeekBar.setText(String.valueOf(mosaicFragment.nbrItems));
+                seekBar.setProgress(mainFragment.nbrItems);
+                textViewSeekBar.setText(String.valueOf(mainFragment.nbrItems));
             }
         });
 
         radioPadding.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                seekBar.setProgress(mosaicFragment.padding);
-                textViewSeekBar.setText(String.valueOf(mosaicFragment.padding));
+                seekBar.setProgress(mainFragment.padding);
+                textViewSeekBar.setText(String.valueOf(mainFragment.padding));
             }
         });
 
         radioTextSize.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                seekBar.setProgress((int)mosaicFragment.textSize*2);
-                textViewSeekBar.setText(String.valueOf(mosaicFragment.textSize));
+                seekBar.setProgress((int) mainFragment.textSize*2);
+                textViewSeekBar.setText(String.valueOf(mainFragment.textSize));
             }
         });
         return view;

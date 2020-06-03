@@ -32,4 +32,7 @@
     <string name="items">Items</string>
     <string name="padding">Marges</string>
     <string name="text_size">Taille de texte</string>
+    <string name="layout_1_2">Mise en page 1/2</string>
+    <string name="layout_2_2">Mise en page 2/2</string>
+    <string name="finalization">Finalisation</string>
 </resources>

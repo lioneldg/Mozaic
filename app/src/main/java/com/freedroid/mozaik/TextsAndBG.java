@@ -18,10 +18,10 @@ import java.util.Objects;
 
 public class TextsAndBG extends Fragment {
 
-    MosaicFragment mosaicFragment;
+    MainFragment mainFragment;
 
-    public TextsAndBG(MosaicFragment mosaicFragment) {
-        this.mosaicFragment = mosaicFragment;
+    public TextsAndBG(MainFragment mainFragment) {
+        this.mainFragment = mainFragment;
     }
 
     Spinner spinnerColorText;
@@ -33,7 +33,6 @@ public class TextsAndBG extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.texts_and_bg,container);
-
         spinnerColorText = view.findViewById(R.id.spinnerColorText);
         spinnerColorBG = view.findViewById(R.id.spinnerColorBG);
         checkBoxBold = view.findViewById(R.id.checkBoxBold);
@@ -73,8 +72,8 @@ public class TextsAndBG extends Fragment {
 
         spinnerColorText.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mosaicFragment.colorText = getColor(position);
-                mosaicFragment.setColumnsAndAdapter();
+                mainFragment.colorText = getColor(position);
+                mainFragment.setColumnsAndAdapter();
             }
 
             public void onNothingSelected(AdapterView<?> parent) { }
@@ -82,7 +81,7 @@ public class TextsAndBG extends Fragment {
 
         spinnerColorBG.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mosaicFragment.grid.setBackgroundColor(getColor(position));
+                mainFragment.grid.setBackgroundColor(getColor(position));
             }
 
             public void onNothingSelected(AdapterView<?> parent) { }
@@ -92,9 +91,9 @@ public class TextsAndBG extends Fragment {
     }
 
     private void checkVerif(){
-        mosaicFragment.textBold = checkBoxBold.isChecked();
-        mosaicFragment.textItalic = checkBoxItalic.isChecked();
-        mosaicFragment.setColumnsAndAdapter();
+        mainFragment.textBold = checkBoxBold.isChecked();
+        mainFragment.textItalic = checkBoxItalic.isChecked();
+        mainFragment.setColumnsAndAdapter();
     }
 
     private int getColor(int position){

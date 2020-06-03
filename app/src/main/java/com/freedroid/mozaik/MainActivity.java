@@ -10,11 +10,13 @@ import android.os.Environment;
 
 public class MainActivity extends AppCompatActivity {
 
-    MosaicFragment mosaicFragment;
+    MainFragment mainFragment;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        setTitle(getString(R.string.layout_1_2));
 
         //si la mémoire est inaccessible on prévient l'utilisateur et on ferme l'application dans onActivityResult
         if(!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) || Environment.MEDIA_MOUNTED_READ_ONLY.equals(Environment.getExternalStorageState()) ){
@@ -25,11 +27,11 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(intent, 864);
         }
 
-        mosaicFragment = new MosaicFragment();
+        mainFragment = new MainFragment();
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        ft.add(R.id.main, mosaicFragment,"tagMosaicFragment");
-        ft.show(mosaicFragment);
+        ft.add(R.id.main, mainFragment,"tagMosaicFragment");
+        ft.show(mainFragment);
         ft.commit();
     }
 

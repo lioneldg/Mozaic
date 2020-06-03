@@ -38,6 +38,9 @@
     <string name="text_size">Text size</string>
     <string name="more" translatable="false">+</string>
     <string name="less" translatable="false">-</string>
+    <string name="layout_1_2">Layout 1/2</string>
+    <string name="layout_2_2">Layout 2/2</string>
+    <string name="finalization">Finalization</string>
 
 
 </resources>

@@ -30,12 +30,8 @@ import java.util.Objects;
 import static android.app.Activity.RESULT_OK;
 
 //desenregistrer le listener de viewPager lors de la gestion du cycle de vie
-//lors du refit ajuster la seekbar!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//effectuer un refit si il n'a pas été fait lors du finish
-//trouver un logo pour l'application
-//proposer les coins des images arrondis
 
-public class MosaicFragment extends Fragment {
+public class MainFragment extends Fragment {
 
     protected int nbrItems = 0;
     private int nbrColumns = 0;
@@ -83,7 +79,7 @@ public class MosaicFragment extends Fragment {
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View view = inflater.inflate(R.layout.mosaic_fragment_layout, container, false);
+        View view = inflater.inflate(R.layout.main_fragment_layout, container, false);
 
         nbrItems = 20;                                      // démarrer l'application à 20 items
 
@@ -112,24 +108,28 @@ public class MosaicFragment extends Fragment {
                 switch (position){
                     case 0:                                     //première vue
                         if(oldPositionViewPager != position) {
+                            Objects.requireNonNull(getActivity()).setTitle(getString(R.string.layout_1_2));
                             oldPositionViewPager = position;    //permet de n'effectuer le code qu'une seule fois par page
                             grid.setEnabled(false);             //interdit de sélectionner des photos
                             break;
                         }
                     case 1:
                         if(oldPositionViewPager != position && oldPositionViewPager == 2) {
+                            Objects.requireNonNull(getActivity()).setTitle(getString(R.string.layout_2_2));
                             oldPositionViewPager = position;    //permet de n'effectuer le code qu'une seule fois par page
                             grid.setEnabled(false);             //deuxieme vue
                             setColumnsAndAdapter();             //le but ici est de choisir sa mise en page
                             break;
                         }
                         else if(oldPositionViewPager != position){
+                            Objects.requireNonNull(getActivity()).setTitle(getString(R.string.layout_2_2));
                             oldPositionViewPager = position;    //permet de n'effectuer le code qu'une seule fois par page
                             grid.setEnabled(false);             //deuxieme vue
                             break;
                         }
                     case 2:
                         if(oldPositionViewPager != position) {
+                            Objects.requireNonNull(getActivity()).setTitle(getString(R.string.finalization));
                             oldPositionViewPager = position;    //permet de n'effectuer le code qu'une seule fois par page
                             grid.setEnabled(true);              //troisième vue,  c'est dans cette vue qu'on choisis les photos à afficher
                             setColumnsAndAdapter();             //et qu'on extrait une image format A4

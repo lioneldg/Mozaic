@@ -3,7 +3,6 @@ package com.freedroid.mozaik;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,14 +11,15 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import static android.app.Activity.RESULT_OK;
 
 public class FinalizationFragment extends Fragment {
 
-    private MosaicFragment mosaicFragment;
+    private MainFragment mainFragment;
 
-    public FinalizationFragment(MosaicFragment mosaicFragment) {
-        this.mosaicFragment = mosaicFragment;
+    public FinalizationFragment(MainFragment mainFragment) {
+        this.mainFragment = mainFragment;
     }
 
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -35,7 +35,7 @@ public class FinalizationFragment extends Fragment {
 
         buttonRefit.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                mosaicFragment.refit();
+                mainFragment.refit();
             }
         });
 
@@ -54,7 +54,7 @@ public class FinalizationFragment extends Fragment {
         if(requestCode == 582 && resultCode == RESULT_OK) {
             assert data != null;
             String fileName = data.getStringExtra("fileName");
-            Bitmap bitmap = IO_BitmapImage.getBitmapFromView(mosaicFragment.grid);
+            Bitmap bitmap = IO_BitmapImage.getBitmapFromView(mainFragment.grid);
             String text = getString(R.string.document_saved_in_pictures_folder);
 
             IO_BitmapImage.saveImage(getContext(), bitmap, fileName + ".jpg", true);     //enregistrement de l'image finale au format A4
