@@ -1,6 +1,8 @@
 package com.freedroid.mozaik.mains_contenairs;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -32,6 +34,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
 import static android.app.Activity.RESULT_OK;
 
 public class MainFragment extends Fragment {
@@ -59,11 +64,10 @@ public class MainFragment extends Fragment {
     private ViewPager2 viewPager;
     private ViewPager2.OnPageChangeCallback onPageChangeCallback;
     private boolean smallViewPager = false;
+    private SharedPreferences preferences = null;
 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        IO_BitmapImage.deleteCacheFiles(getContext());  //on vide le cache de l'application pour avoir assez de place pour travailler
 
         windowSize = new Point();
         textSize = 30;
@@ -80,6 +84,18 @@ public class MainFragment extends Fragment {
             lastNames[i] = getString(R.string.last_name);
             imageIds[i] = (i%2 == 0)? R.drawable.user_female : R.drawable.user_male;    //alternace image femme / image homme
         }
+
+        preferences = requireActivity().getPreferences(Context.MODE_PRIVATE);
+        HashSet<String> hs = (HashSet<String>) preferences.getStringSet("sourcesFiles", null); //lecture des images dans les SharedPreferences
+        if(hs != null){
+            Object[] object = hs.toArray();
+            for(int i = 0; i < object.length; i++){
+                sourcesFiles[i] = new File((String)object[i]);
+                firstNames[i] = preferences.getString("firstName"+ object[i],"");    //lecture des noms et prénoms dans les SharedPreferences
+                lastNames[i] = preferences.getString("lastName"+ object[i],"");
+            }
+        }
+
     }
 
     @Nullable
@@ -187,6 +203,9 @@ public class MainFragment extends Fragment {
                     currentImageName = Calendar.getInstance().getTime();                            //nom du fichier image = date précise
                     sourcesFiles[currentSelection] = IO_BitmapImage.saveImage(getActivity(), finalBitmapSelectedFile,currentImageName.toString(), false);    //enregistrement de l'image sélectionnée avec plus basse qualité
 
+                    //mise à jour du Set<String> de SharedPreference des sourcesFiles
+                    updateSharedPreferenceSourceFiles();
+
                     //lecture image
                     final ImageView currentImage = grid.getChildAt(currentSelection).findViewById(R.id.grid_item_image);
                     Bitmap imageSource = IO_BitmapImage.readImage(getContext(), currentImageName.toString(), currentSizeImage);//lecture et compression de l'image à afficher
@@ -203,6 +222,8 @@ public class MainFragment extends Fragment {
             currentLastName.setText(data.getStringExtra("lastName"));
             firstNames[currentSelection] = data.getStringExtra("firstName");
             lastNames[currentSelection] = data.getStringExtra("lastName");
+            updateSharedPreferenceFirstNames(); //enregistrement des noms et prénoms dans SharedPreferences
+            updateSharedPreferenceLastNames();
             currentSelection = -1;
         }
     }
@@ -284,6 +305,27 @@ public class MainFragment extends Fragment {
         requireContext().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true);
         return getResources().getDimensionPixelSize(tv.resourceId);
     }
+
+    private void updateSharedPreferenceSourceFiles(){
+        Set<String> sourcesFilesSet = new HashSet<>();    //à chaque sélection d'une nouvelle image, on recrée la liste Set des fichiers images en cours
+        for(File f:sourcesFiles)
+            if(f != null) sourcesFilesSet.add(f.getPath());
+
+        preferences.edit().putStringSet("sourcesFiles",sourcesFilesSet).apply();
+    }
+
+    private void updateSharedPreferenceFirstNames(){
+        for(int i = 0; i < 100; i++)
+            if(firstNames[i] != null)
+                preferences.edit().putString("firstName"+sourcesFiles[i],firstNames[i]).apply();
+    }
+
+    private void updateSharedPreferenceLastNames(){
+        for(int i = 0; i < 100; i++)
+            if(lastNames[i] != null)
+                preferences.edit().putString("lastName"+sourcesFiles[i],lastNames[i]).apply();
+    }
+
 
     public int getNbrItems() {
         return nbrItems;

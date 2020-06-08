@@ -34,4 +34,8 @@
     <string name="layout_1_2" tools:ignore="TypographyFractions">Mise en page 1/2</string>
     <string name="layout_2_2">Mise en page 2/2</string>
     <string name="finalization">Finalisation</string>
+    <string name="new_project">nouveau projet</string>
+    <string name="about">à propos</string>
+    <string name="memory_inaccessible">La mémoire est inaccessible!\nEssayez de redémarrer l\'application ou d\'insérer une carte SD</string>
+    <string name="about_dialog">Merci d\'utiliser Mozaik.\n\nN\'hésitez pas à me contacter si vous avez des suggestions d\'amélioration.\n\nlioneldegans@gmail.com</string>
 </resources>

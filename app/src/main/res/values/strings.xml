@@ -40,6 +40,10 @@
     <string name="layout_1_2" tools:ignore="TypographyFractions">Layout 1/2</string>
     <string name="layout_2_2">Layout 2/2</string>
     <string name="finalization">Finalization</string>
+    <string name="new_project">new project</string>
+    <string name="about">about</string>
+    <string name="memory_inaccessible">Memory is inaccessible!\nTry restarting the application or inserting an SD card</string>
+    <string name="about_dialog">Thank you for using Mozaik.\n\nDo not hesitate to contact me if you have suggestions for improvement.\n\nlioneldegans@gmail.com</string>
 
 
 </resources>
