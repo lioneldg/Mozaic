@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +32,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
-
 import static android.app.Activity.RESULT_OK;
 
 public class MainFragment extends Fragment {
@@ -58,6 +58,7 @@ public class MainFragment extends Fragment {
     private int colorText = 0;
     private ViewPager2 viewPager;
     private ViewPager2.OnPageChangeCallback onPageChangeCallback;
+    private boolean smallViewPager = false;
 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -130,6 +131,10 @@ public class MainFragment extends Fragment {
                             oldPositionViewPager = position;    //permet de n'effectuer le code qu'une seule fois par page
                             grid.setEnabled(false);             //deuxieme vue
                             setColumnsAndAdapter();             //le but ici est de choisir sa mise en page
+                            if(smallViewPager) {                //on vérifie si le ViewPager est écrasé
+                                viewPager.getLayoutParams().height *= 1.5;//on lui redonne sa taille normale
+                                smallViewPager = false;
+                            }
                             break;
                         }
                         else if(oldPositionViewPager != position){
@@ -144,6 +149,10 @@ public class MainFragment extends Fragment {
                             oldPositionViewPager = position;    //permet de n'effectuer le code qu'une seule fois par page
                             grid.setEnabled(true);              //troisième vue,  c'est dans cette vue qu'on choisis les photos à afficher
                             setColumnsAndAdapter();             //et qu'on extrait une image format A4
+                            if((grid.getLayoutParams().height + viewPager.getLayoutParams().height + actionBarSize()) > windowSize.y) { //la grille est cachée en partie
+                                viewPager.getLayoutParams().height /= 1.5;                                                              //on écrase le ViewPager
+                                smallViewPager = true;                                                                                  //et on passe smallViewPager à true
+                            }
                         }
                 }
             }
@@ -268,6 +277,12 @@ public class MainFragment extends Fragment {
             }
         nbrItems -= freePos;
         setColumnsAndAdapter();
+    }
+
+    private int actionBarSize(){
+        TypedValue tv = new TypedValue();
+        requireContext().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true);
+        return getResources().getDimensionPixelSize(tv.resourceId);
     }
 
     public int getNbrItems() {
